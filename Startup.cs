@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Pweb_2021.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,13 +24,14 @@ namespace Pweb_2021
         }
 
         public IConfiguration Configuration { get; }
-
+        string path = Path.Combine(Directory.GetCurrentDirectory(), "AppData");
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")
+                    .Replace("[DataDirectory]", path)));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
