@@ -14,5 +14,9 @@ namespace Pweb_2021.Data
         {
         }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Imovel> Imoveis { get; set; }
+
+        public DbSet<ImovelImg> ImovelImgs { get; set; }
+        public DbSet<Reserva> Reservas{ get; set; }
     }
 }

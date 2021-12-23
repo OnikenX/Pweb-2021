@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pweb_2021.Data;
 
 namespace Pweb_2021.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211221200916_addedImovelTables")]
+    partial class addedImovelTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,12 +251,10 @@ namespace Pweb_2021.Migrations
                     b.Property<string>("Descricao")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdentityUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("ImovelId");
-
-                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("Imoveis");
                 });
@@ -358,15 +358,6 @@ namespace Pweb_2021.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId");
-
-                    b.Navigation("IdentityUser");
-                });
-
             modelBuilder.Entity("Pweb_2021.Models.ImovelImg", b =>
                 {
                     b.HasOne("Pweb_2021.Models.Imovel", "Imovel")
@@ -385,7 +376,7 @@ namespace Pweb_2021.Migrations
                         .HasForeignKey("IdentityUserId");
 
                     b.HasOne("Pweb_2021.Models.Imovel", "Imovel")
-                        .WithMany("Reservas")
+                        .WithMany()
                         .HasForeignKey("ImovelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -398,8 +389,6 @@ namespace Pweb_2021.Migrations
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
                 {
                     b.Navigation("ImovelImgs");
-
-                    b.Navigation("Reservas");
                 });
 #pragma warning restore 612, 618
         }

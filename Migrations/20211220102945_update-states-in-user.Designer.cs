@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pweb_2021.Data;
 
 namespace Pweb_2021.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211220102945_update-states-in-user")]
+    partial class updatestatesinuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,7 +243,7 @@ namespace Pweb_2021.Migrations
 
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
                 {
-                    b.Property<int>("ImovelId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -249,62 +251,34 @@ namespace Pweb_2021.Migrations
                     b.Property<string>("Descricao")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdentityUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasKey("ImovelId");
-
-                    b.HasIndex("IdentityUserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Imoveis");
                 });
 
-            modelBuilder.Entity("Pweb_2021.Models.ImovelImg", b =>
+            modelBuilder.Entity("Pweb_2021.Models.User", b =>
                 {
-                    b.Property<int>("ImovelImgId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ImovelId")
-                        .HasColumnType("int");
+                    b.Property<byte>("Cargo")
+                        .HasColumnType("tinyint");
 
-                    b.Property<string>("pathToImage")
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ImovelImgId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ImovelId");
-
-                    b.ToTable("ImovelImgs");
-                });
-
-            modelBuilder.Entity("Pweb_2021.Models.Reserva", b =>
-                {
-                    b.Property<int>("ReservaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DataFinal")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DataInicial")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("IdentityUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ImovelId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReservaId");
-
-                    b.HasIndex("IdentityUserId");
-
-                    b.HasIndex("ImovelId");
-
-                    b.ToTable("Reservas");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -356,50 +330,6 @@ namespace Pweb_2021.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId");
-
-                    b.Navigation("IdentityUser");
-                });
-
-            modelBuilder.Entity("Pweb_2021.Models.ImovelImg", b =>
-                {
-                    b.HasOne("Pweb_2021.Models.Imovel", "Imovel")
-                        .WithMany("ImovelImgs")
-                        .HasForeignKey("ImovelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Imovel");
-                });
-
-            modelBuilder.Entity("Pweb_2021.Models.Reserva", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId");
-
-                    b.HasOne("Pweb_2021.Models.Imovel", "Imovel")
-                        .WithMany("Reservas")
-                        .HasForeignKey("ImovelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("IdentityUser");
-
-                    b.Navigation("Imovel");
-                });
-
-            modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
-                {
-                    b.Navigation("ImovelImgs");
-
-                    b.Navigation("Reservas");
                 });
 #pragma warning restore 612, 618
         }
