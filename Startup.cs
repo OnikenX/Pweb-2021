@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pweb_2021.Data;
+using Pweb_2021.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +76,7 @@ namespace Pweb_2021
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {
             //initializing custom roles 
-            var UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             
             string[] roleNames = { "Admin", "Func"};
@@ -98,7 +99,7 @@ namespace Pweb_2021
             {
 
                 //Here you could create a super user who will maintain the web app
-                var poweruser = new IdentityUser
+                var poweruser = new ApplicationUser
                 {
                     UserName = Configuration["AppSettings:superuser.user"],
                     Email = Configuration["AppSettings:superuser.mail"],

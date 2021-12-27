@@ -21,13 +21,8 @@ namespace Pweb_2021.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
             builder.Entity<Reserva>().HasOne(e => e.Imovel).WithMany(e => e.Reservas).OnDelete(DeleteBehavior.NoAction);
             builder.Entity<Imovel>().HasMany(e => e.Reservas).WithOne(e => e.Imovel).OnDelete(DeleteBehavior.NoAction);
-            
         }
-
-
-
     }
 }
