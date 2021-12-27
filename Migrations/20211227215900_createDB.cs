@@ -47,20 +47,6 @@ namespace Pweb_2021.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DisplayOrder = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -166,6 +152,75 @@ namespace Pweb_2021.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Imoveis",
+                columns: table => new
+                {
+                    ImovelId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Imoveis", x => x.ImovelId);
+                    table.ForeignKey(
+                        name: "FK_Imoveis_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ImovelImgs",
+                columns: table => new
+                {
+                    ImovelImgId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    pathToImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImovelId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImovelImgs", x => x.ImovelImgId);
+                    table.ForeignKey(
+                        name: "FK_ImovelImgs_Imoveis_ImovelId",
+                        column: x => x.ImovelId,
+                        principalTable: "Imoveis",
+                        principalColumn: "ImovelId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reservas",
+                columns: table => new
+                {
+                    ReservaId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DataInicial = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataFinal = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ImovelId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservas", x => x.ReservaId);
+                    table.ForeignKey(
+                        name: "FK_Reservas_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reservas_Imoveis_ImovelId",
+                        column: x => x.ImovelId,
+                        principalTable: "Imoveis",
+                        principalColumn: "ImovelId");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -204,6 +259,26 @@ namespace Pweb_2021.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Imoveis_ApplicationUserId",
+                table: "Imoveis",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImovelImgs_ImovelId",
+                table: "ImovelImgs",
+                column: "ImovelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservas_ApplicationUserId",
+                table: "Reservas",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservas_ImovelId",
+                table: "Reservas",
+                column: "ImovelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -224,10 +299,16 @@ namespace Pweb_2021.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "ImovelImgs");
+
+            migrationBuilder.DropTable(
+                name: "Reservas");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Imoveis");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

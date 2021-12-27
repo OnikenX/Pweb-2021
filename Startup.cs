@@ -22,7 +22,7 @@ namespace Pweb_2021
         {
             Configuration = configuration;
         }
-
+       
         public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -69,6 +69,51 @@ namespace Pweb_2021
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+            
+            //CreateRoles(app.ApplicationServices).Wait();
+        }
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            //initializing custom roles 
+            var UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            
+            string[] roleNames = { "Admin", "Func"};
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    //create the roles and seed them to the database: Question 1
+                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            //Ensure you have these values in your appsettings.json file
+            var _user = await UserManager.FindByEmailAsync(Configuration["AppSettings:superuser.user"]);
+
+            if (_user == null)
+            {
+
+                //Here you could create a super user who will maintain the web app
+                var poweruser = new IdentityUser
+                {
+                    UserName = Configuration["AppSettings:superuser.user"],
+                    Email = Configuration["AppSettings:superuser.mail"],
+                };
+
+                string userPWD = Configuration["AppSettings:superuser.password"];
+
+
+                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+                if (createPowerUser.Succeeded)
+                {
+                    //here we tie the new user to the role
+                    await UserManager.AddToRoleAsync(poweruser, "Admin");
+                }
+            }
         }
     }
 }

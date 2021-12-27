@@ -10,23 +10,23 @@ using Pweb_2021.Models;
 
 namespace Pweb_2021.Controllers
 {
-    public class ReservasController : Controller
+    public class ImoveisController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ReservasController(ApplicationDbContext context)
+        public ImoveisController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Reservas
+        // GET: Imoveis
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservas.Include(r => r.IdentityUser).Include(r => r.Imovel);
+            var applicationDbContext = _context.Imoveis.Include(i => i.ApplicationUser);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Reservas/Details/5
+        // GET: Imoveis/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,45 +34,42 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
-            var reserva = await _context.Reservas
-                .Include(r => r.IdentityUser)
-                .Include(r => r.Imovel)
-                .FirstOrDefaultAsync(m => m.ReservaId == id);
-            if (reserva == null)
+            var imovel = await _context.Imoveis
+                .Include(i => i.ApplicationUser)
+                .FirstOrDefaultAsync(m => m.ImovelId == id);
+            if (imovel == null)
             {
                 return NotFound();
             }
 
-            return View(reserva);
+            return View(imovel);
         }
 
-        // GET: Reservas/Create
+        // GET: Imoveis/Create
         public IActionResult Create()
         {
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ImovelId");
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Reservas/Create
+        // POST: Imoveis/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReservaId,DataInicial,DataFinal,ImovelId,IdentityUserId")] Reserva reserva)
+        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(reserva);
+                _context.Add(imovel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reserva.IdentityUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ImovelId", reserva.ImovelId);
-            return View(reserva);
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
+            return View(imovel);
         }
 
-        // GET: Reservas/Edit/5
+        // GET: Imoveis/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,24 +77,23 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
-            var reserva = await _context.Reservas.FindAsync(id);
-            if (reserva == null)
+            var imovel = await _context.Imoveis.FindAsync(id);
+            if (imovel == null)
             {
                 return NotFound();
             }
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reserva.IdentityUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ImovelId", reserva.ImovelId);
-            return View(reserva);
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
+            return View(imovel);
         }
 
-        // POST: Reservas/Edit/5
+        // POST: Imoveis/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReservaId,DataInicial,DataFinal,ImovelId,IdentityUserId")] Reserva reserva)
+        public async Task<IActionResult> Edit(int id, [Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
         {
-            if (id != reserva.ReservaId)
+            if (id != imovel.ImovelId)
             {
                 return NotFound();
             }
@@ -106,12 +102,12 @@ namespace Pweb_2021.Controllers
             {
                 try
                 {
-                    _context.Update(reserva);
+                    _context.Update(imovel);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReservaExists(reserva.ReservaId))
+                    if (!ImovelExists(imovel.ImovelId))
                     {
                         return NotFound();
                     }
@@ -122,12 +118,11 @@ namespace Pweb_2021.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reserva.IdentityUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ImovelId", reserva.ImovelId);
-            return View(reserva);
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
+            return View(imovel);
         }
 
-        // GET: Reservas/Delete/5
+        // GET: Imoveis/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,32 +130,31 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
-            var reserva = await _context.Reservas
-                .Include(r => r.IdentityUser)
-                .Include(r => r.Imovel)
-                .FirstOrDefaultAsync(m => m.ReservaId == id);
-            if (reserva == null)
+            var imovel = await _context.Imoveis
+                .Include(i => i.ApplicationUser)
+                .FirstOrDefaultAsync(m => m.ImovelId == id);
+            if (imovel == null)
             {
                 return NotFound();
             }
 
-            return View(reserva);
+            return View(imovel);
         }
 
-        // POST: Reservas/Delete/5
+        // POST: Imoveis/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reserva = await _context.Reservas.FindAsync(id);
-            _context.Reservas.Remove(reserva);
+            var imovel = await _context.Imoveis.FindAsync(id);
+            _context.Imoveis.Remove(imovel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ReservaExists(int id)
+        private bool ImovelExists(int id)
         {
-            return _context.Reservas.Any(e => e.ReservaId == id);
+            return _context.Imoveis.Any(e => e.ImovelId == id);
         }
     }
 }

@@ -22,6 +22,10 @@ aplicar alteracoes
 
 `update-database`
 
+## roles
+
+Sobre as roles de cada user na db só será registado os admins e funcionarios, pois os clientes podem ser considerados todos os que estao logados, e os gerentes sao aqueles que registaram imoveis
+
 
 ## estrutura de dados
 
@@ -29,7 +33,7 @@ aplicar alteracoes
 - users
     - Id
     - nome
-    - role(cliente, gestor, funcionario, admin)
+    - role(funcionario, admin)
     - data de criacao
 
 - imoveis
