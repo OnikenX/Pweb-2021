@@ -10,8 +10,8 @@ using Pweb_2021.Data;
 namespace Pweb_2021.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211227215900_createDB")]
-    partial class createDB
+    [Migration("20211227233531_addDB")]
+    partial class addDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

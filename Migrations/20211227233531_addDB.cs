@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Pweb_2021.Migrations
 {
-    public partial class createDB : Migration
+    public partial class addDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
