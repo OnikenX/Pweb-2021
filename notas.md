@@ -25,7 +25,15 @@ aplicar alteracoes
 ## roles
 
 Sobre as roles de cada user na db só será registado os admins e funcionarios, pois os clientes podem ser considerados todos os que estao logados, e os gerentes sao aqueles que registaram imoveis
+- admin
+- func
 
+## admin user
+
+User:
+- admin@admin.com
+Pass:
+- Admin10@
 
 ## estrutura de dados
 
@@ -33,7 +41,7 @@ Sobre as roles de cada user na db só será registado os admins e funcionarios, 
 - users
     - Id
     - nome
-    - role(funcionario, admin)
+    - role(func, admin)
     - data de criacao
 
 - imoveis

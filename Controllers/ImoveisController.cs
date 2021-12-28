@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +26,14 @@ namespace Pweb_2021.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Imoveis.Include(i => i.ApplicationUser);
+            
+            ViewBag.helper = new HelperClass(this);
             return View(await applicationDbContext.ToListAsync());
+        }
+
+        private object Helper(ref ImoveisController imoveisController)
+        {
+            throw new NotImplementedException();
         }
 
         // GET: Imoveis/Details/5
@@ -50,25 +59,31 @@ namespace Pweb_2021.Controllers
         // GET: Imoveis/Create
         public IActionResult Create()
         {
-            
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
+
+            //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
+
             return View();
         }
 
+     
         // POST: Imoveis/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
+        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao")] Imovel imovel)
         {
+            imovel.ApplicationUser = await _context.Users.FindAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            imovel.ApplicationUserId = imovel.ApplicationUser.Id;
+
             if (ModelState.IsValid)
             {
                 _context.Add(imovel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.helper = new HelperClass(this);
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
             return View(imovel);
         }

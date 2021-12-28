@@ -23,12 +23,13 @@ namespace Pweb_2021
         {
             Configuration = configuration;
         }
-       
+
         public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "AppData");
+            bool secureLogin = false;
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -36,9 +37,32 @@ namespace Pweb_2021
                     .Replace("[DataDirectory]", path)));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services
+                .AddDefaultIdentity<ApplicationUser>(options =>
+                {
+                    if (secureLogin)
+                    {
+                        options.SignIn.RequireConfirmedAccount = true;
+                    }
+                    else
+                    {
+                        options.Password.RequireNonAlphanumeric = false;
+                        options.Password.RequireUppercase = false;
+                        options.Password.RequiredLength = 4;
+                        options.Password.RequireDigit = false;
+                    }
+                })
+                .AddRoles<IdentityRole>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            //.AddRoles()
+            //.AddUserManager<UserManager<ApplicationUser>>()
+            //.AddDefaultTokenProviders()
+            //.AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,51 +94,58 @@ namespace Pweb_2021
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-            
-            //CreateRoles(app.ApplicationServices).Wait();
+
+            CreateRoles(app.ApplicationServices);
         }
-        private async Task CreateRoles(IServiceProvider serviceProvider)
+        private void CreateRoles(IServiceProvider serviceProvider)
         {
-            //initializing custom roles 
-            var UserManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            
-            string[] roleNames = { "Admin", "Func"};
-            IdentityResult roleResult;
-
-            foreach (var roleName in roleNames)
+            using (var scope = serviceProvider.CreateScope())
             {
-                var roleExist = await RoleManager.RoleExistsAsync(roleName);
-                if (!roleExist)
+                //initializing custom roles
+                var roleManager = (RoleManager<IdentityRole>)scope.ServiceProvider
+                    .GetService(typeof(RoleManager<IdentityRole>));
+                var userManager = (UserManager<ApplicationUser>)scope.ServiceProvider
+                    .GetService(typeof(UserManager<ApplicationUser>));
+                string[] roleNames = { Statics.Roles.ADMIN, Statics.Roles.FUNCIONARIO };
+
+                foreach (var roleName in roleNames)
                 {
-                    //create the roles and seed them to the database: Question 1
-                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+                    bool roleExist = roleManager.RoleExistsAsync(roleName).Result;
+                    if (!roleExist)
+                    {
+                        //create the roles and seed them to the database: Question 1
+                        roleManager.CreateAsync(new IdentityRole(roleName)).Wait();
+                    }
                 }
-            }
 
-            //Ensure you have these values in your appsettings.json file
-            var _user = await UserManager.FindByEmailAsync(Configuration["AppSettings:superuser.user"]);
 
-            if (_user == null)
-            {
+                var usertowait = userManager.FindByEmailAsync(Statics.Root.mail);
+                usertowait.Wait();
+                ApplicationUser? _user = usertowait.Result;
 
-                //Here you could create a super user who will maintain the web app
-                var poweruser = new ApplicationUser
+                if (_user == null)
                 {
-                    UserName = Configuration["AppSettings:superuser.user"],
-                    Email = Configuration["AppSettings:superuser.mail"],
-                };
+                    //Here you could create a super user who will maintain the web app
+                    var poweruser = new ApplicationUser
+                    {
+                        UserName = Statics.Root.user,
+                        Email = Statics.Root.mail,
+                    };
 
-                string userPWD = Configuration["AppSettings:superuser.password"];
+                    string userPWD = Statics.Root.password;
 
-
-                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
-                if (createPowerUser.Succeeded)
-                {
-                    //here we tie the new user to the role
-                    await UserManager.AddToRoleAsync(poweruser, "Admin");
+                    var poweruserwait = userManager.CreateAsync(poweruser, userPWD);
+                    poweruserwait.Wait();
+                    var createPowerUser = poweruserwait.Result;
+                    if (createPowerUser.Succeeded)
+                    {
+                        //here we tie the new user to the role
+                        userManager.AddToRoleAsync(poweruser, Statics.Roles.ADMIN).Wait();
+                    }
                 }
             }
         }
     }
+
+
 }

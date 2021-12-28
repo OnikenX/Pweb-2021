@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pweb_2021.Models;
 using System;
@@ -27,6 +28,14 @@ namespace Pweb_2021.Controllers
         {
             return View();
         }
+
+        [Authorize]
+        public IActionResult Test()
+        {
+            ViewBag.helper = new HelperClass(this);
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
