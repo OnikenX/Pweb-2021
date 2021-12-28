@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -45,9 +46,11 @@ namespace Pweb_2021.Controllers
             return View(imovel);
         }
 
+        [Authorize]
         // GET: Imoveis/Create
         public IActionResult Create()
         {
+            
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
@@ -56,6 +59,7 @@ namespace Pweb_2021.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
         {
@@ -69,6 +73,7 @@ namespace Pweb_2021.Controllers
             return View(imovel);
         }
 
+        [Authorize]
         // GET: Imoveis/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
