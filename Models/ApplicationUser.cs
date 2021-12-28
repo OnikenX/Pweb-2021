@@ -8,6 +8,6 @@ namespace Pweb_2021.Models
        
         public List<Imovel> Imoveis { get; set; }
         public List<Reserva> Reservas { get; set; }
-
+        public List<Feedback> Feedbacks { get; set; }
     }
 }

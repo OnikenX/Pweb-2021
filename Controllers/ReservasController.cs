@@ -47,8 +47,13 @@ namespace Pweb_2021.Controllers
         }
 
         // GET: Reservas/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
             return View();

@@ -21,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.Descricao)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ApplicationUser)
+                @Html.DisplayNameFor(model => model.ApplicationUser.UserName)
             </th>
             <th></th>
         </tr>
@@ -37,7 +37,7 @@
                     @Html.DisplayFor(modelItem => item.Descricao)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ApplicationUser.Id)
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
                 </td>
                 <td>
                     @{ var helper = (HelperClass)ViewBag.helper;

@@ -9,11 +9,11 @@ namespace Pweb_2021.Models
 {
     public class HelperClass
     {
-       public bool isAuth =false;
-       public bool isAdmin = false;
-       public string userId = "";
+        public bool isAuth = false;
+        public bool isAdmin = false;
+        public string userId = "";
 
-       public HelperClass(Controller context)
+        public HelperClass(Controller context)
         {
             setValues(context);
         }
@@ -23,7 +23,7 @@ namespace Pweb_2021.Models
             {
                 if (context.User.Identity.IsAuthenticated)
                 {
-                   isAuth = true;
+                    isAuth = true;
                     isAdmin = context.User.IsInRole("admin");
                     userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 }

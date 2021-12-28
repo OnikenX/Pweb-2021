@@ -60,8 +60,8 @@ namespace Pweb_2021.Controllers
         public IActionResult Create()
         {
 
-            //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
-
+            ViewBag.ApplicationUserId = new SelectList(_context.Users, "Id", "Id");
+            ViewBag.helper = new HelperClass(this);
             return View();
         }
 
@@ -72,7 +72,7 @@ namespace Pweb_2021.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao")] Imovel imovel)
+        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
         {
             imovel.ApplicationUser = await _context.Users.FindAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             imovel.ApplicationUserId = imovel.ApplicationUser.Id;
