@@ -219,6 +219,35 @@ namespace Pweb_2021.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Pweb_2021.Models.Feedback", b =>
+                {
+                    b.Property<int>("FeedbackId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comentario")
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Estrelas")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int>("ImovelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FeedbackId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("ImovelId");
+
+                    b.ToTable("Feedbacks");
+                });
+
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
                 {
                     b.Property<int>("ImovelId")
@@ -232,11 +261,15 @@ namespace Pweb_2021.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("preco")
+                        .HasColumnType("int");
 
                     b.HasKey("ImovelId");
 
@@ -349,6 +382,23 @@ namespace Pweb_2021.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pweb_2021.Models.Feedback", b =>
+                {
+                    b.HasOne("Pweb_2021.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Pweb_2021.Models.Imovel", "Imovel")
+                        .WithMany("Comentarios")
+                        .HasForeignKey("ImovelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Imovel");
+                });
+
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
                 {
                     b.HasOne("Pweb_2021.Models.ApplicationUser", "ApplicationUser")
@@ -392,6 +442,8 @@ namespace Pweb_2021.Migrations
 
             modelBuilder.Entity("Pweb_2021.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("Feedbacks");
+
                     b.Navigation("Imoveis");
 
                     b.Navigation("Reservas");
@@ -399,6 +451,8 @@ namespace Pweb_2021.Migrations
 
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
                 {
+                    b.Navigation("Comentarios");
+
                     b.Navigation("ImovelImgs");
 
                     b.Navigation("Reservas");
