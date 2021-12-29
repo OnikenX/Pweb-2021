@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Pweb_2021.Models;
 
 namespace Pweb_2021.Controllers
 {
+    [Authorize]
+    [ValidateAntiForgeryToken]
     public class ReservasController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -47,15 +50,17 @@ namespace Pweb_2021.Controllers
         }
 
         // GET: Reservas/Create
+       
         public IActionResult Create(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
+            ViewBag.helper = new HelperClass(this);
+            ViewBag.helper.extraId1 = id;
+            //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
             return View();
         }
 

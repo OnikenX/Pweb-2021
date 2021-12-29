@@ -12,6 +12,9 @@ namespace Pweb_2021.Models
         public bool isAuth = false;
         public bool isAdmin = false;
         public string userId = "";
+        public int extraId1 = 0;
+        public int extraId2 = 0;
+
 
         public HelperClass(Controller context)
         {
