@@ -173,6 +173,9 @@ namespace Pweb_2021.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("GestorId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -207,6 +210,8 @@ namespace Pweb_2021.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GestorId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -322,6 +327,12 @@ namespace Pweb_2021.Migrations
                     b.Property<int>("ImovelId")
                         .HasColumnType("int");
 
+                    b.Property<byte>("avaliacao")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("comentario")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ReservaId");
 
                     b.HasIndex("ApplicationUserId");
@@ -380,6 +391,15 @@ namespace Pweb_2021.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Pweb_2021.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("Pweb_2021.Models.ApplicationUser", "Gestor")
+                        .WithMany("Funcionarios")
+                        .HasForeignKey("GestorId");
+
+                    b.Navigation("Gestor");
                 });
 
             modelBuilder.Entity("Pweb_2021.Models.Feedback", b =>
@@ -443,6 +463,8 @@ namespace Pweb_2021.Migrations
             modelBuilder.Entity("Pweb_2021.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("Funcionarios");
 
                     b.Navigation("Imoveis");
 

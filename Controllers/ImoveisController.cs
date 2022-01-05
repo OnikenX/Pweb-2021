@@ -59,7 +59,6 @@ namespace Pweb_2021.Controllers
         // GET: Imoveis/Create
         public IActionResult Create()
         {
-
             //ViewBag.ApplicationUserId = new SelectList(_context.Users, "Id", "Id");
             ViewBag.helper = new HelperClass(this);
             return View();

@@ -13,6 +13,12 @@ namespace Pweb_2021.Models
         [Required]
         public DateTime DataFinal { get; set; }
 
+        //para o gestor
+        [Range(0,10)]
+        public byte avaliacao { get; set; }
+
+        public string comentario { get; set; }
+
         //imovel a reservar
         [Required]
         public int ImovelId { get; set; }

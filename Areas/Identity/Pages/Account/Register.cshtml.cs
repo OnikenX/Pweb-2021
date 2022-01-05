@@ -61,6 +61,8 @@ namespace Pweb_2021.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            [Display(Name = "É gestor")]
+            public bool isGestor { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -77,8 +79,23 @@ namespace Pweb_2021.Areas.Identity.Pages.Account
             {
                 var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                System.Diagnostics.Debug.WriteLine($"Debug: password input: `{Input.Password}`");
                 if (result.Succeeded)
                 {
+                    IdentityResult result_addrole;
+                    if (Input.isGestor)
+                    {
+                        result_addrole = await _userManager.AddToRoleAsync(user, Statics.Roles.GESTOR);
+                    }
+                    else
+                    {
+                        result_addrole = await _userManager.AddToRoleAsync(user, Statics.Roles.CLIENTE);
+                    }
+                    foreach (var error in result_addrole.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

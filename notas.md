@@ -2,8 +2,7 @@
 
 ## TODO
 
-- turnar alguns metodos async
-
+- verificar as verficacoes do create do funcionario
 
 ## sources
 
@@ -31,9 +30,9 @@ Sobre as roles de cada user na db só será registado os admins e funcionarios, 
 ## admin user
 
 User:
-- admin@admin.com
+- root@root.com
 Pass:
-- Admin10@
+- root
 
 ## estrutura de dados
 
@@ -57,6 +56,16 @@ Pass:
 - reserva
     - Id
     - imovelId
+    - avaliacao
+    - comentario
     - reservanteId
     - dataInicial
     - dataFinal
+
+- feedback
+    - id
+    - estrelas
+    - comentario
+    - userId
+    - imovelId
+

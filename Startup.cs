@@ -48,7 +48,6 @@ namespace Pweb_2021
                     {
                         options.Password.RequireNonAlphanumeric = false;
                         options.Password.RequireUppercase = false;
-                        options.Password.RequiredLength = 4;
                         options.Password.RequireDigit = false;
                     }
                 })
@@ -66,7 +65,7 @@ namespace Pweb_2021
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -95,57 +94,66 @@ namespace Pweb_2021
                 endpoints.MapRazorPages();
             });
 
-            CreateRoles(app.ApplicationServices);
+            CreateRoles(serviceProvider).Wait();
         }
-        private void CreateRoles(IServiceProvider serviceProvider)
+        private async Task CreateRoles(IServiceProvider serviceProvider)
         {
-            using (var scope = serviceProvider.CreateScope())
+            //initializing custom roles
+            var roleManager = serviceProvider
+                .GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider
+                .GetRequiredService<UserManager<ApplicationUser>>();
+
+            var roleNames = Statics.Roles.getRoles();
+
+            foreach (var roleName in roleNames)
             {
-                //initializing custom roles
-                var roleManager = (RoleManager<IdentityRole>)scope.ServiceProvider
-                    .GetService(typeof(RoleManager<IdentityRole>));
-                var userManager = (UserManager<ApplicationUser>)scope.ServiceProvider
-                    .GetService(typeof(UserManager<ApplicationUser>));
-                string[] roleNames = { Statics.Roles.ADMIN, Statics.Roles.FUNCIONARIO };
-
-                foreach (var roleName in roleNames)
+                bool roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
                 {
-                    bool roleExist = roleManager.RoleExistsAsync(roleName).Result;
-                    if (!roleExist)
-                    {
-                        //create the roles and seed them to the database: Question 1
-                        roleManager.CreateAsync(new IdentityRole(roleName)).Wait();
-                    }
+                    //create the roles and seed them to the database: Question 1
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
+            }
 
-
-                var usertowait = userManager.FindByEmailAsync(Statics.Root.mail);
-                usertowait.Wait();
-                ApplicationUser? _user = usertowait.Result;
-
+            var createDefaultAdmin = true;
+            if (createDefaultAdmin)
+            {
+                ApplicationUser? _user = await userManager.FindByEmailAsync(Statics.Root.mail);
                 if (_user == null)
                 {
                     //Here you could create a super user who will maintain the web app
                     var poweruser = new ApplicationUser
                     {
-                        UserName = Statics.Root.user,
+                        UserName = Statics.Root.mail,
                         Email = Statics.Root.mail,
                     };
 
                     string userPWD = Statics.Root.password;
 
-                    var poweruserwait = userManager.CreateAsync(poweruser, userPWD);
-                    poweruserwait.Wait();
-                    var createPowerUser = poweruserwait.Result;
+                    var createPowerUser = await userManager.CreateAsync(poweruser, userPWD);
                     if (createPowerUser.Succeeded)
                     {
                         //here we tie the new user to the role
-                        userManager.AddToRoleAsync(poweruser, Statics.Roles.ADMIN).Wait();
+                        var result_role = await userManager.AddToRoleAsync(poweruser, Statics.Roles.ADMIN);
+                        if (!result_role.Succeeded)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error: adding role");
+                        }
+                        //confirm email
+                        var code = await userManager.GenerateEmailConfirmationTokenAsync(poweruser);
+                        var result_confirm = await userManager.ConfirmEmailAsync(poweruser, code);
+                        if (!result_confirm.Succeeded)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error: adding confirmation");
+                        }
                     }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Error: adding poweruser");
                 }
             }
         }
     }
-
-
 }

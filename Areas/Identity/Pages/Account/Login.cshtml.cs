@@ -77,7 +77,7 @@ namespace Pweb_2021.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        
+            
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
@@ -99,9 +99,17 @@ namespace Pweb_2021.Areas.Identity.Pages.Account
                 }
                 else
                 {
+                    if (result.IsNotAllowed)
+                    {
+                        ModelState.AddModelError(string.Empty, "User is not allowed.");
+                        return Page();
+                    }
+                    
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
+               
+                
             }
 
             // If we got this far, something failed, redisplay form
