@@ -18,6 +18,8 @@ namespace Pweb_2021.Data
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<ImovelImg> ImovelImgs { get; set; }
         public DbSet<Reserva> Reservas { get; set; }
+
+        public DbSet<Test> tests { get; set; }
         //public DbSet<FuncGestor> FuncGestors { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {

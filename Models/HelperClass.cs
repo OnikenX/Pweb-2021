@@ -20,6 +20,11 @@ namespace Pweb_2021.Models
         {
             setValues(context);
         }
+
+        public static string getUserId(Controller context)
+        {
+            return context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
         public void setValues(Controller context)
         {
             using (context)
@@ -28,7 +33,7 @@ namespace Pweb_2021.Models
                 {
                     isAuth = true;
                     isAdmin = context.User.IsInRole("admin");
-                    userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    userId = getUserId(context);
                 }
                 else
                 {

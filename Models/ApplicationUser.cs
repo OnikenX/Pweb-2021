@@ -14,14 +14,5 @@ namespace Pweb_2021.Models
         public ApplicationUser Gestor { get; set; }
         public List<ApplicationUser> Funcionarios { get; set; }
     }
-    public class NewUser
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-    }
+    
 }

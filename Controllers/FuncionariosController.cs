@@ -100,6 +100,18 @@ namespace Pweb_2021.Controllers
             return View();
         }
 
+        public class NewUser
+        {
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
+
+        }
+
         // GET: Imoveis/Delete/5
         public async Task<IActionResult> Delete(string? id)
         {
@@ -143,38 +155,100 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            if (user.GestorId != HelperClass.getUserId(this))
+            {
+                return NotFound();
+            }
+
+            var editUser = new EditUser();
+            editUser.Email = user.Email;
+
+            return View(editUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("UserName,Email")] ApplicationUser user)
+        public async Task<IActionResult> Edit(string id, [Bind("UserName,Email,ChangePassword,ChangeEmail")] EditUser user_new_info)
         {
-            var helper = new HelperClass(this);
-            var usersWithThisEmail  = await _context.Users.Where(c => c.Email == user.Email).ToListAsync();
-            
-
             if (ModelState.IsValid)
             {
-                try
+                var user = await _userManager.FindByIdAsync(id);
+                if (user.GestorId != HelperClass.getUserId(this))
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError(string.Empty, "This id is not valid to edit.");
                 }
-                catch (DbUpdateConcurrencyException)
+                //changing email
+                if (user_new_info.ChangeEmail)
                 {
-                    if (!UserExists(user.Id))
+                    if (string.IsNullOrEmpty(user_new_info.Email))
                     {
-                        return NotFound();
+                        ModelState.AddModelError(string.Empty, "There is no email to change.");
+                        return View(user_new_info);
                     }
-                    else
+
+                    if (user.Email != user_new_info.Email)
                     {
-                        throw;
+                        var result = await _userManager.ChangeEmailAsync(
+                                                    user, user_new_info.Email,
+                                                    await _userManager.GenerateChangeEmailTokenAsync(user, user_new_info.Email)
+                                                );
+                        if (!result.Succeeded)
+                        {
+                            foreach (var error in result.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+
+                            }
+                            return View(user_new_info);
+                        }
                     }
                 }
+                if (user_new_info.ChangePassword)
+                {
+                    //if errors
+                    if (string.IsNullOrEmpty(user_new_info.Password))
+                    {
+                        ModelState.AddModelError(string.Empty, "There is no password to change.");
+                        return View(user_new_info);
+                    }
+
+                    var result_password_change =
+                    await _userManager.ChangePasswordAsync(
+                        user, user_new_info.Password,
+                        await _userManager.GeneratePasswordResetTokenAsync(user)
+                    );
+                    if (!result_password_change.Succeeded)
+                    {
+                        foreach (var error in result_password_change.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View(user_new_info);
+                    }
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(user_new_info);
+
+        }
+
+        public class EditUser
+        {
+
+            [EmailAddress]
+            public string Email { get; set; }
+
+
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
+
+            [Required]
+            [Display(Name = "Mudar Password")]
+            public bool ChangePassword { get; set; }
+            [Required]
+            [Display(Name = "Mudar Email")]
+            public bool ChangeEmail { get; set; }
         }
 
         private bool UserExists(string id)
