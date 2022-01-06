@@ -51,7 +51,7 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.helper = new HelperClass(this);
             return View(imovel);
         }
 
@@ -75,6 +75,35 @@ namespace Pweb_2021.Controllers
         {
             imovel.ApplicationUser = await _context.Users.FindAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             imovel.ApplicationUserId = imovel.ApplicationUser.Id;
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(imovel);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.helper = new HelperClass(this);
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
+            return View(imovel);
+        }
+
+        [Authorize]
+        // GET: Imoveis/Create
+        public IActionResult AddImage()
+        {
+            ViewBag.helper = new HelperClass(this);
+            return View();
+        }
+
+     
+        // POST: Imoveis/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddImage([Bind("ImovelImgId,Description,pathToImage,ImovelId")] ImovelImg imovelImg)
+        {
 
             if (ModelState.IsValid)
             {
