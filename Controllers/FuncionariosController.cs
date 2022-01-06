@@ -25,15 +25,15 @@ namespace Pweb_2021.Controllers
             _context = context;
         }
 
-        
+
         // GET: Imoveis
         public async Task<IActionResult> Index()
         {
             var helper = new HelperClass(this);
             var applicationDbContext = _context.Users.Where(c => c.GestorId == helper.userId);
-
+            var users = await applicationDbContext.ToListAsync();
             ViewBag.helper = helper;
-            return View(await applicationDbContext.ToListAsync());
+            return View(users);
         }
 
         private object Helper(ref ImoveisController imoveisController)
@@ -66,25 +66,16 @@ namespace Pweb_2021.Controllers
         }
 
 
-       
 
-        // POST: Imoveis/Create
+
+        // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Email,Password")] NewUser newUser)
+        public async Task<IActionResult>
+            Create([Bind("Email,Password")] NewUser newUser)
         {
-            if(newUser == null)
-            {
-                return View();
-            }
-
-            if (newUser.Email == null || newUser.Password == null)
-            {
-                return View();
-            }
-           
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
@@ -92,15 +83,19 @@ namespace Pweb_2021.Controllers
                     UserName = newUser.Email,
                     Email = newUser.Email,
                     GestorId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-            };
+                };
                 var result_creation = await _userManager.CreateAsync(user, newUser.Password);
                 if (result_creation.Succeeded)
                 {
                     var result_addrole = await _userManager.AddToRoleAsync(user, Statics.Roles.FUNCIONARIO);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                foreach (var error in result_creation.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
             return View();
         }
@@ -155,10 +150,9 @@ namespace Pweb_2021.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("UserName,Email")] ApplicationUser user)
         {
-            if (id != user.Id)
-            {
-                return NotFound();
-            }
+            var helper = new HelperClass(this);
+            var usersWithThisEmail  = await _context.Users.Where(c => c.Email == user.Email).ToListAsync();
+            
 
             if (ModelState.IsValid)
             {

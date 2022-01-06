@@ -18,10 +18,10 @@ namespace Pweb_2021.Models
     {
         [Required]
         [EmailAddress]
-        public string Email;
+        public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string Password;
+        public string Password { get; set; }
     }
 }
