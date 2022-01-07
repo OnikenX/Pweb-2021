@@ -9,10 +9,11 @@ namespace Pweb_2021.Models
 
         //caminho para a imagem
         [Required]
-        public string pathToImage { get; set; }
+        public string Image { get; set; }
         
         [Required]
         public int ImovelId { get; set; }
         public Imovel Imovel { get; set; }
     }
 }
+

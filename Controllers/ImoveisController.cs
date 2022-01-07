@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Pweb_2021.Data;
 using Pweb_2021.Models;
+using Pweb_2021.ViewModels;
 
 namespace Pweb_2021.Controllers
 {
@@ -102,18 +103,19 @@ namespace Pweb_2021.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddImage([Bind("ImovelImgId,Description,pathToImage,ImovelId")] ImovelImg imovelImg)
+        public async Task<IActionResult> AddImage([Bind("ImovelImgId,Description,Image,ImovelId")] ImovelImgViewModel imovelImgViewModel)
         {
-
+            
             if (ModelState.IsValid)
             {
-                _context.Add(imovel);
+
+                
+                _context.Add(imovelImgViewModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.helper = new HelperClass(this);
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
-            return View(imovel);
+            return View(imovelImgViewModel);
         }
 
         [Authorize]

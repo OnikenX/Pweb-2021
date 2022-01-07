@@ -57,7 +57,7 @@ namespace Pweb_2021.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ImovelImgId,Description,pathToImage,ImovelId")] ImovelImg imovelImg)
+        public async Task<IActionResult> Create([Bind("ImovelImgId,Description,Image,ImovelId")] ImovelImg imovelImg)
         {
             if (ModelState.IsValid)
             {
@@ -91,7 +91,7 @@ namespace Pweb_2021.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ImovelImgId,Description,pathToImage,ImovelId")] ImovelImg imovelImg)
+        public async Task<IActionResult> Edit(int id, [Bind("ImovelImgId,Description,Image,ImovelId")] ImovelImg imovelImg)
         {
             if (id != imovelImg.ImovelImgId)
             {

@@ -15,7 +15,7 @@
             <div class="form-group">
                 <div class="row">
                     <label asp-for="ChangeEmail" class="control-label col-6"></label>
-                    <input type="checkbox" asp-for="ChangeEmail" id="button_email_false" onclick="hideEmail()" value="true" class="form-control col-4 btn btn-info" />
+                    <input type="checkbox" asp-for="ChangeEmail" id="button_email_false" onclick="hideEmail()"  class="form-control col-4 btn btn-info" />
                 </div>
             </div>
             <div class="form-group" id="email_group" style="display:none;">
@@ -26,7 +26,7 @@
             <div class="form-group">
                 <div class="row">
                     <label asp-for="ChangePassword" class="control-label col-6"></label>
-                    <input asp-for="ChangePassword" onclick="hidePassword()" id="button_password"  class="form-control col-4 btn btn-info" />
+                    <input asp-for="ChangePassword" value="false" onclick="hidePassword()" id="button_password"  class="form-control col-4 btn btn-info" />
                 </div>
                 <span asp-validation-for="ChangePassword" class="text-danger"></span>
             </div>
@@ -47,20 +47,19 @@
     function hidePassword() {
         hideAction("password_group");
         var button = document.getElementById("button_password");
-        changeButtonStatus(button);
-        console.log(button.value);
+        console.log(button.);
     }
 
     function hideEmail() {
         hideAction("email_group");
-        console.log(document.getElementById("button_email").value);
-        
+        var button = document.getElementById("button_email").value);
+        console.log(button.value);
     }
     function changeButtonStatus(button) {
-        if (button.value === true) {
-            button.value = false;
+        if (button.value === "true") {
+            button.value = "false";
         } else {
-            button.value = true;
+            button.value = "true";
         }
     }
 
