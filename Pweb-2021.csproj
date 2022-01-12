@@ -53,6 +53,7 @@
 
   <ItemGroup>
     <Folder Include="AppData\" />
+    <Folder Include="Views\ImovelImgs\" />
     <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
