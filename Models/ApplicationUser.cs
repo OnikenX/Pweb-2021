@@ -10,7 +10,7 @@ namespace Pweb_2021.Models
         public List<Reserva> Reservas { get; set; }
         public List<Feedback> Feedbacks { get; set; }
 
-        public string GestorId { get; set; }
+        public string GestorId { get; set; } //é para os funcionarios saberem quem é o chefe
         public ApplicationUser Gestor { get; set; }
         public List<ApplicationUser> Funcionarios { get; set; }
     }
