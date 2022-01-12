@@ -30,8 +30,11 @@ namespace Pweb_2021.Controllers
         public async Task<IActionResult> Index()
         {
             var helper = new HelperClass(this);
-            var applicationDbContext = _context.Users;
-            var users = await applicationDbContext.ToListAsync();
+            var  userRoles =await  _context.UserRoles.ToListAsync();
+            ViewData["userRoles"] = userRoles;
+            var roles = await _context.Roles.ToListAsync();
+            ViewData["roles"] = roles;
+            var users = await _context.Users.ToListAsync();
             ViewBag.helper = helper;
             return View(users);
         }
