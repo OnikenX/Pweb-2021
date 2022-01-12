@@ -24,7 +24,22 @@
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.)
+                @{
+                    var roles_do_user = "";
+                    var userRoles = (List< Microsoft.AspNetCore.Identity.IdentityUserRole<string>>)ViewBag.userRoles;
+                    var roles = (List<Microsoft.AspNetCore.Identity.IdentityRole>)ViewBag.roles;
+                                     //todos os roles que o user user tem
+                    var roles_user = userRoles.Where(ur => ur.UserId == item.Id).ToList();
+                    foreach (var role_user in roles_user){
+                        var roles_user_name_list = roles.Where(ur => ur.Id == role_user.RoleId).ToList();
+                        
+                        for(var i = 0;i < roles_user_name_list.Count; i++ ){
+                            var role_user_name = roles_user_name_list[i].Name;
+                            roles_do_user += role_user_name + " ";
+                        }
+                    }
+                }
+                @roles_do_user
             </td>
 
             <td>
