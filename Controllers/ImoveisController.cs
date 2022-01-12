@@ -93,8 +93,8 @@ namespace Pweb_2021.Controllers
         public IActionResult AddImage(int imovelId)
         {
             ViewBag.helper = new HelperClass(this);
-            
-            return View(imovelId);
+            ViewBag.helper.extraId1 = imovelId;
+            return View();
         }
 
      
@@ -106,11 +106,8 @@ namespace Pweb_2021.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddImage([Bind("ImovelImgId,Description,Image,ImovelId")] ImovelImgViewModel imovelImgViewModel)
         {
-            
             if (ModelState.IsValid)
             {
-
-                
                 _context.Add(imovelImgViewModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
