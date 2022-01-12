@@ -90,10 +90,11 @@ namespace Pweb_2021.Controllers
 
         [Authorize]
         // GET: Imoveis/Create
-        public IActionResult AddImage()
+        public IActionResult AddImage(int imovelId)
         {
             ViewBag.helper = new HelperClass(this);
-            return View();
+            
+            return View(imovelId);
         }
 
      
