@@ -32,7 +32,7 @@ namespace Pweb_2021.Controllers
             var applicationDbContext = _context.Imoveis.Include(i => i.ApplicationUser);
             var imagens = await _context.ImovelImgs.ToListAsync();
             ViewData["imagens"] = imagens;
-            
+
             ViewBag.helper = new HelperClass(this);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -199,7 +199,7 @@ namespace Pweb_2021.Controllers
         ///////////////////////////////
         ///////////////////////////////
         ///////////////////////////////
-        
+
         [Authorize(Roles = Statics.Roles.GESTOR)]
         // GET: Imoveis/Create
         public async Task<IActionResult> AddImg(int? id)
@@ -232,10 +232,6 @@ namespace Pweb_2021.Controllers
             helper.extraId1 = (int)model.ImovelId;
             ViewBag.helper = helper;
 
-
-
-
-
             if (ModelState.IsValid)
             {
                 var supportedTypes = new[] { "jpg", "png", "webp", "jfif" };
@@ -256,9 +252,9 @@ namespace Pweb_2021.Controllers
                 };
                 _context.Add(image);
                 await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Edit), new { id = model.ImovelId });
             }
+
             return View(model);
         }
 
@@ -286,10 +282,13 @@ namespace Pweb_2021.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteImgConfirmed(int id)
         {
+
             var imovelImg = await _context.ImovelImgs.FindAsync(id);
+            var imovel_id = imovelImg.ImovelId;
+            DeleteFile(imovelImg.pathToImage);
             _context.ImovelImgs.Remove(imovelImg);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id = imovel_id });
         }
 
         private string UploadedFile(ImovelImgViewModel model)
@@ -309,6 +308,29 @@ namespace Pweb_2021.Controllers
             return uniqueFileName;
         }
 
+
+        //apagar a imagem do fs
+        private bool DeleteFile(string fileName)
+        {
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                try
+                {
+                    string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images");
+                    string filePath = Path.Combine(uploadsFolder, fileName);
+                    System.IO.File.Delete(filePath);
+                }
+                catch
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         private bool ImovelImgExists(int id)
         {
             return _context.ImovelImgs.Any(e => e.ImovelImgId == id);

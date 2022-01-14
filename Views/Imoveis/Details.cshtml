@@ -32,7 +32,7 @@
 </div>
 
 
-<hr class="mb-5" />
+<hr />
 <div class="container">
     @{
         var imagens =
@@ -42,12 +42,12 @@
         var i = 0;
         @while (i < imagens.Count())
         {
-             <div class="col-lg-4 col-md-12 mb-4">
+             <div class="row">
                 @while(true){
-                    <div>
-                        <img src="~/images/@imagens[i++].pathToImage" class="img-fluid mb-4" asp-append-version="true" />
+                    <div class="col-lg-4 col-md-12 mb-4">
+                        <img src="~/images/@imagens[i++].pathToImage" class="img-fluid md-2" asp-append-version="true" />
                     </div>
-                    @if (@i%2 == 0 || @i == imagens.Count()){
+                    @if (@i%3 == 0 || @i == imagens.Count()){
                         break;
                     }
                 }
