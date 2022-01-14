@@ -89,7 +89,6 @@ namespace Pweb_2021.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.helper = new HelperClass(this);
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", imovel.ApplicationUserId);
             return View(imovel);
         }
 
@@ -135,14 +134,18 @@ namespace Pweb_2021.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddImg([Bind("ImovelImgId,Description,Image,ImovelId")] ImovelImgViewModel model)
         {
-            
+
+            var helper = new HelperClass(this);
+            helper.extraId1 = (int)model.ImovelId;
+            ViewBag.helper = helper;
+
             if (ModelState.IsValid)
             {
                 var supportedTypes = new[] { "jpg", "png", "webp", "jfif"};
                 var fileExt = System.IO.Path.GetExtension(model.Image.FileName).Substring(1);
                 if (!supportedTypes.Contains(fileExt))
                 {
-                    ModelState.AddModelError(string.Empty, $"A imagem só pode ter uma das seguintes extensões: {supportedTypes}");
+                    ModelState.AddModelError(string.Empty, $"A imagem só pode ter uma das seguintes extensões: {string.Join(',', supportedTypes)}");
                     return View(model);
                 }
 
@@ -158,8 +161,6 @@ namespace Pweb_2021.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewBag.helper = new HelperClass(this);
             return View(model);
         }
 
