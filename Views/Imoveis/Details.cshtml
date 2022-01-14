@@ -10,24 +10,62 @@
     <h4>Imovel</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Nome)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Nome)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Descricao)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Descricao)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ApplicationUser.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ApplicationUser.Email)
         </dd>
     </dl>
 </div>
+
+
+<hr class="mb-5" />
+<div class="container">
+    @{
+        var imagens =
+                (System.Collections.Generic.List<Pweb_2021.Models.ImovelImg>)
+                ViewBag.imagens;
+        
+        var i = 0;
+        @while (i < imagens.Count())
+        {
+             <div class="col-lg-4 col-md-12 mb-4">
+                @while(true){
+                    <div>
+                        <img src="~/images/@imagens[i++].pathToImage" class="img-fluid mb-4" asp-append-version="true" />
+                    </div>
+                    @if (@i%2 == 0 || @i == imagens.Count()){
+                        break;
+                    }
+                }
+            </div>
+        }
+    }
+
+</div>
+
 <div>
     @if (Model.ApplicationUserId == ViewBag.helper.userId || ViewBag.helper.isAdmin)
     {
-        <a asp-action="Edit" asp-route-id="@Model.ImovelId">Edit</a>
-    }|
-    <a asp-action="Index">Back to List</a>
+        <a asp-action="Edit" asp-route-id="@Model.ImovelId">Editar</a> <html> | </html>
+    }
+    @if(ViewBag.helper.isCliente){
+         <a asp-controller="Reserva" asp-action="Create" asp-route-id="@Model.ImovelId">Reservar</a>
+         <html> | </html>
+    }
+    
+    <a asp-action="Index">Voltar para Lista</a>
 </div>

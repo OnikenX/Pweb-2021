@@ -141,7 +141,7 @@ namespace Pweb_2021.Controllers
             return View(imovelImg);
         }
 
-        // POST: ImovelImgs/Delete/5
+        // POST: ImovelImgs/DeleteI/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

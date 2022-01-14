@@ -28,8 +28,39 @@
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
         <a class="btn btn-secondary" asp-area="" asp-controller="Imoveis" asp-action="AddImg" asp-route-id="@Model.ImovelId">Adicionar Imagem</a>
+        
     </div>
 </form>
+@if (((System.Collections.Generic.List<Pweb_2021.Models.ImovelImg>)ViewBag.imagens).Any())
+{
+    <h2>Apagar Imagem</h2>
+
+    <table class="table">
+        @*<thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>*@
+        <tbody>
+            @foreach (Pweb_2021.Models.ImovelImg imagem in ViewBag.imagens)
+            {
+                <tr>
+                    <td>
+                        <img src="~/images/@imagem.pathToImage" class="rounded-circle" height="60" width="60" asp-append-version="true"/>
+                    </td>
+                    <td>
+                        @imagem.Description
+                    </td>
+                    <td>
+                        <a asp-action="DeleteImg" asp-route-id="@imagem.ImovelImgId">Apagar Imagem</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
