@@ -14,6 +14,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.Nome)
             </th>
@@ -31,6 +32,19 @@
         {
             <tr>
                 <td>
+                    @{
+                        var imagens = (System.Collections.Generic.List<Pweb_2021.Models.ImovelImg>)ViewBag.imagens;
+                        if (imagens.Any())
+                        {
+                            var imagens_item = imagens.Where(img => img.ImovelId == img.ImovelId).ToList();
+                            if (imagens_item.Any())
+                            {
+                                <img src="~/images/@imagens_item[0].pathToImage" class="rounded-circle" height="40" width="40" asp-append-version="true" />
+                            }
+                        }
+                    }
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Nome)
                 </td>
                 <td>
@@ -40,22 +54,24 @@
                     @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
                 </td>
                 <td>
-                    @{ var helper = (HelperClass)ViewBag.helper;
+                    @{
+                        var helper = (HelperClass)ViewBag.helper;
                         @if (helper.isAuth)
                         {
                             @if (item.ApplicationUserId == helper.userId || helper.isAdmin)
                             {
                                 <a asp-action="Edit" asp-route-id="@item.ImovelId">Edit</a>
                             }
+
                             <a asp-controller="Reserva" asp-action="Create" asp-route-id="@item.ImovelId">Reservar</a>
                         }
                     }
                     <a asp-action="Details" asp-route-id="@item.ImovelId">Details</a> |
                     @if (item.ApplicationUserId == helper.userId || helper.isAdmin)
                     {
-                    <a asp-action="Delete" asp-route-id="@item.ImovelId">Delete</a>
+                        <a asp-action="Delete" asp-route-id="@item.ImovelId">Delete</a>
                     }
-                    
+
                 </td>
             </tr>
         }
