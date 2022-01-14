@@ -138,6 +138,14 @@ namespace Pweb_2021.Controllers
             
             if (ModelState.IsValid)
             {
+                var supportedTypes = new[] { "jpg", "png", "webp", "jfif"};
+                var fileExt = System.IO.Path.GetExtension(model.Image.FileName).Substring(1);
+                if (!supportedTypes.Contains(fileExt))
+                {
+                    ModelState.AddModelError(string.Empty, $"A imagem só pode ter uma das seguintes extensões: {supportedTypes}");
+                    return View(model);
+                }
+
                 var file_name = UploadedFile(model);
                 var image = new ImovelImg
                 {
