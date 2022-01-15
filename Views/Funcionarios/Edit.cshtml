@@ -8,52 +8,58 @@
 
 <h4>Funcionario @Model.Email</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <div class="row">
-                    <label asp-for="ChangeEmail" class="control-label col-6"></label>
-                    <input type="checkbox" asp-for="ChangeEmail" id="button_email_false" onclick="hideEmail()"  class="form-control col-4 btn btn-info" />
-                </div>
-            </div>
-            <div class="form-group" id="email_group" style="display:none;">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <label asp-for="ChangePassword" class="control-label col-6"></label>
-                    <input asp-for="ChangePassword" value="false" onclick="hidePassword()" id="button_password"  class="form-control col-4 btn btn-info" />
-                </div>
-                <span asp-validation-for="ChangePassword" class="text-danger"></span>
-            </div>
 
-            <div class="form-group" id="password_group" style="display:none;">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <div class="row">
+            <label asp-for="ChangeEmail" class="control-label col-6"></label>
+            <input type="checkbox" asp-for="ChangeEmail" onclick="hideEmail()" id="button_email" class="form-control" />
+        </div>
     </div>
+    <div class="form-group" id="email_group" style="display:none;">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <label asp-for="ChangePassword" class="control-label col-6"></label>
+            <input asp-for="ChangePassword" value="false" onclick="hidePassword()" id="button_password" class="form-control col-4 btn btn-info" />
+        </div>
+        <span asp-validation-for="ChangePassword" class="text-danger"></span>
+    </div>
+    <div class="form-group" id="password_group" style="display:none;">
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
 </div>
 
-<script>
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
+<script type="text/javascript">
     function hidePassword() {
         hideAction("password_group");
         var button = document.getElementById("button_password");
-        console.log(button.);
+        console.log(button.checked);
     }
 
     function hideEmail() {
         hideAction("email_group");
-        var button = document.getElementById("button_email").value);
-        console.log(button.value);
+        var button = document.getElementById("button_email");
+        console.log(button.checked);
     }
     function changeButtonStatus(button) {
         if (button.value === "true") {
@@ -72,10 +78,4 @@
         }
     }
 </script>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

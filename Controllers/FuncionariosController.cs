@@ -168,7 +168,7 @@ namespace Pweb_2021.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("UserName,Email,ChangePassword,ChangeEmail")] EditUser user_new_info)
+        public async Task<IActionResult> Edit(string id, [Bind("ChangeEmail,Email,ChangePassword,Password")] EditUser user_new_info)
         {
             if (ModelState.IsValid)
             {
