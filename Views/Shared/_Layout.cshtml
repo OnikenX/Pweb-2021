@@ -28,6 +28,13 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Imoveis" asp-action="Index">Imoveis</a>
                         </li>
 
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                            </li>
+                        }
+
                         @if (User.IsInRole(Pweb_2021.Statics.Roles.GESTOR))
                         {
                             <li class="nav-item">
