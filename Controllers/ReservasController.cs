@@ -12,7 +12,6 @@ using Pweb_2021.Models;
 namespace Pweb_2021.Controllers
 {
     [Authorize]
-    [ValidateAntiForgeryToken]
     public class ReservasController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -57,8 +56,10 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
+
             ViewBag.helper = new HelperClass(this);
-            ViewBag.helper.extraId1 = id;
+           
+            ViewBag.helper.extraId1 = (int)id;
             //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             //ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
             return View();
