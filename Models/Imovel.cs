@@ -11,10 +11,13 @@ namespace Pweb_2021.Models
         [Required]
         public string Nome { get; set; }
         [Required]
+        [Display(Name = "Descrição")]
         [MaxLength(5000)]
         public string Descricao { get; set; }
-
-        public int preco { get; set; }
+        [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "O valor não pode ser negativo.")]
+        [Display(Name = "Preço")]
+        public int Preco { get; set; }
         public List<ImovelImg> ImovelImgs { get;set;}
         public List<Reserva> Reservas { get;set;}
         public List<Feedback> Comentarios { get; set; }

@@ -79,10 +79,11 @@ namespace Pweb_2021.Controllers
         [HttpPost]
         [Authorize(Roles = Statics.Roles.GESTOR)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
+        public async Task<IActionResult> Create([Bind("ImovelId,Nome,Descricao,Preco,ApplicationUserId")] Imovel imovel)
         {
             imovel.ApplicationUser = await _context.Users.FindAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             imovel.ApplicationUserId = imovel.ApplicationUser.Id;
+            
 
             if (ModelState.IsValid)
             {
@@ -90,6 +91,7 @@ namespace Pweb_2021.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.helper = new HelperClass(this);
             return View(imovel);
         }
