@@ -21,11 +21,41 @@ namespace Pweb_2021.Controllers
             _context = context;
         }
 
+        private bool reservaIdsequals(Reserva rs)
+        {
+            var helper = new HelperClass(this);
+            if (helper.isAdmin)
+                return true;
+            else if (helper.isGestor)
+            {
+                return rs.Imovel.ApplicationUserId == helper.userId;
+            }
+            else if (helper.isFunc)
+            {
+                var userFun = _context.Users.Find(helper.userId);
+                if (userFun == null)
+                {
+                    return false;
+                }
+                return rs.Imovel.ApplicationUserId == userFun.GestorId;
+            }
+            else if (helper.isCliente)
+            {
+                return rs.ApplicationUserId == helper.userId;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         // GET: Reservas
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservas.Include(r => r.ApplicationUser).Include(r => r.Imovel);
-            return View(await applicationDbContext.ToListAsync());
+            var helper = new HelperClass(this);
+            var applicationDbContext = await _context.Reservas.Include(r => r.ApplicationUser).Include(r => r.Imovel).ToListAsync();
+            var listaReserva = applicationDbContext.Where(rs => reservaIdsequals(rs)).ToList();
+            return View(listaReserva);
         }
 
         // GET: Reservas/Details/5
@@ -49,7 +79,7 @@ namespace Pweb_2021.Controllers
         }
 
         // GET: Reservas/Create
-       
+
         public IActionResult Create(int? id)
         {
             if (id == null)
@@ -58,7 +88,7 @@ namespace Pweb_2021.Controllers
             }
 
             ViewBag.helper = new HelperClass(this);
-           
+
             ViewBag.helper.extraId1 = (int)id;
             //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             //ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
