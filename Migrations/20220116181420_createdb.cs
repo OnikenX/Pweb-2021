@@ -167,7 +167,7 @@ namespace Pweb_2021.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Descricao = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
-                    preco = table.Column<int>(type: "int", nullable: false),
+                    Preco = table.Column<int>(type: "int", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -178,34 +178,6 @@ namespace Pweb_2021.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Feedbacks",
-                columns: table => new
-                {
-                    FeedbackId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Estrelas = table.Column<byte>(type: "tinyint", nullable: false),
-                    Comentario = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: true),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ImovelId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Feedbacks", x => x.FeedbackId);
-                    table.ForeignKey(
-                        name: "FK_Feedbacks_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Feedbacks_Imoveis_ImovelId",
-                        column: x => x.ImovelId,
-                        principalTable: "Imoveis",
-                        principalColumn: "ImovelId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -239,6 +211,7 @@ namespace Pweb_2021.Migrations
                     DataInicial = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataFinal = table.Column<DateTime>(type: "datetime2", nullable: false),
                     avaliacao = table.Column<byte>(type: "tinyint", nullable: false),
+                    Estado = table.Column<byte>(type: "tinyint", nullable: false),
                     comentario = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImovelId = table.Column<int>(type: "int", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
@@ -257,6 +230,34 @@ namespace Pweb_2021.Migrations
                         column: x => x.ImovelId,
                         principalTable: "Imoveis",
                         principalColumn: "ImovelId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Feedbacks",
+                columns: table => new
+                {
+                    FeedbackId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Estrelas = table.Column<byte>(type: "tinyint", nullable: false),
+                    Comentario = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReservaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feedbacks", x => x.FeedbackId);
+                    table.ForeignKey(
+                        name: "FK_Feedbacks_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Feedbacks_Reservas_ReservaId",
+                        column: x => x.ReservaId,
+                        principalTable: "Reservas",
+                        principalColumn: "ReservaId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -309,9 +310,9 @@ namespace Pweb_2021.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Feedbacks_ImovelId",
+                name: "IX_Feedbacks_ReservaId",
                 table: "Feedbacks",
-                column: "ImovelId");
+                column: "ReservaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Imoveis_ApplicationUserId",
@@ -358,10 +359,10 @@ namespace Pweb_2021.Migrations
                 name: "ImovelImgs");
 
             migrationBuilder.DropTable(
-                name: "Reservas");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Reservas");
 
             migrationBuilder.DropTable(
                 name: "Imoveis");

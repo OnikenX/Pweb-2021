@@ -20,7 +20,7 @@ namespace Pweb_2021.Models
         public int Preco { get; set; }
         public List<ImovelImg> ImovelImgs { get;set;}
         public List<Reserva> Reservas { get;set;}
-        public List<Feedback> Comentarios { get; set; }
+        
 
         //quem registou o imovel
         [Required]

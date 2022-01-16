@@ -241,14 +241,14 @@ namespace Pweb_2021.Migrations
                     b.Property<byte>("Estrelas")
                         .HasColumnType("tinyint");
 
-                    b.Property<int>("ImovelId")
+                    b.Property<int>("ReservaId")
                         .HasColumnType("int");
 
                     b.HasKey("FeedbackId");
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("ImovelId");
+                    b.HasIndex("ReservaId");
 
                     b.ToTable("Feedbacks");
                 });
@@ -345,21 +345,6 @@ namespace Pweb_2021.Migrations
                     b.ToTable("Reservas");
                 });
 
-            modelBuilder.Entity("Pweb_2021.Models.Test", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("test")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tests");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -426,15 +411,15 @@ namespace Pweb_2021.Migrations
                         .WithMany("Feedbacks")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("Pweb_2021.Models.Imovel", "Imovel")
-                        .WithMany("Comentarios")
-                        .HasForeignKey("ImovelId")
+                    b.HasOne("Pweb_2021.Models.Reserva", "Reserva")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("ReservaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
 
-                    b.Navigation("Imovel");
+                    b.Navigation("Reserva");
                 });
 
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
@@ -491,11 +476,14 @@ namespace Pweb_2021.Migrations
 
             modelBuilder.Entity("Pweb_2021.Models.Imovel", b =>
                 {
-                    b.Navigation("Comentarios");
-
                     b.Navigation("ImovelImgs");
 
                     b.Navigation("Reservas");
+                });
+
+            modelBuilder.Entity("Pweb_2021.Models.Reserva", b =>
+                {
+                    b.Navigation("Feedbacks");
                 });
 #pragma warning restore 612, 618
         }

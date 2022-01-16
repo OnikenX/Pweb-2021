@@ -23,7 +23,7 @@ namespace Pweb_2021.Controllers
         // GET: Feedbacks
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Feedbacks.Include(f => f.ApplicationUser).Include(f => f.Imovel);
+            var applicationDbContext = _context.Feedbacks.Include(f => f.ApplicationUser).Include(f => f.Reserva).Include(f=> f.Reserva.Imovel);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -37,7 +37,8 @@ namespace Pweb_2021.Controllers
 
             var feedback = await _context.Feedbacks
                 .Include(f => f.ApplicationUser)
-                .Include(f => f.Imovel)
+                .Include(f => f.Reserva)
+                .Include(f => f.Reserva.Imovel)
                 .FirstOrDefaultAsync(m => m.FeedbackId == id);
             if (feedback == null)
             {
@@ -56,7 +57,7 @@ namespace Pweb_2021.Controllers
             }
 
             var feedback = new Feedback();
-            feedback.ImovelId = (int)id;
+            feedback.ReservaId = (int)id;
             //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             //ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
             return View(feedback);
@@ -68,17 +69,15 @@ namespace Pweb_2021.Controllers
         [HttpPost]
         [Authorize(Roles = Statics.Roles.CLIENTE)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Estrelas,Comentario,ImovelId")] Feedback feedback)
+        public async Task<IActionResult> Create([Bind("Estrelas,Comentario,ReservaId")] Feedback feedback)
         {
             if (ModelState.IsValid)
             {
                 feedback.ApplicationUserId = HelperClass.getUserId(this);
                 _context.Add(feedback);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.ImovelId });
+                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", feedback.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.ImovelId);
             return View(feedback);
         }
 
@@ -96,7 +95,7 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", feedback.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.ImovelId);
+            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.Reserva.ImovelId);
             return View(feedback);
         }
 
@@ -130,10 +129,10 @@ namespace Pweb_2021.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.ImovelId });
+                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
             }
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", feedback.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.ImovelId);
+            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.Reserva.ImovelId);
             return View(feedback);
         }
 
@@ -148,7 +147,8 @@ namespace Pweb_2021.Controllers
 
             var feedback = await _context.Feedbacks
                 .Include(f => f.ApplicationUser)
-                .Include(f => f.Imovel)
+                .Include(f => f.Reserva)
+                .Include(f => f.Reserva.Imovel)
                 .FirstOrDefaultAsync(m => m.FeedbackId == id);
             if (feedback == null)
             {
@@ -167,7 +167,7 @@ namespace Pweb_2021.Controllers
             var feedback = await _context.Feedbacks.FindAsync(id);
             _context.Feedbacks.Remove(feedback);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Details), "Imoveis", new {id = feedback.ImovelId});
+            return RedirectToAction(nameof(Details), "Imoveis", new {id = feedback.Reserva.ImovelId});
         }
 
         private bool FeedbackExists(int id)

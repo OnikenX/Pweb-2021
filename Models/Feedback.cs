@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pweb_2021.Models
 {
+
     public class Feedback
     {
         public int FeedbackId { get; set; }
@@ -20,8 +21,10 @@ namespace Pweb_2021.Models
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
 
-        public int ImovelId { get; set; }
-        public Imovel Imovel { get; set; }
+        public int ReservaId { get; set; }
+        public Reserva Reserva{ get; set; }
+
+
         public string MakeStarts()
         {
             return MakeStarts(Estrelas);
