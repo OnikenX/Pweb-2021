@@ -1,0 +1,44 @@
+﻿@model Pweb_2021.Models.Feedback
+
+@{
+    ViewData["Title"] = "Apagar";
+}
+
+<h1>Apagar</h1>
+
+<h3>Tens a certeza de apagar este comentario?</h3>
+<div>
+    <h4>Comentario</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Estrelas)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Estrelas)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Comentario)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Comentario)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ApplicationUser)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ApplicationUser.Id)
+        </dd class>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Imovel)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Imovel.ApplicationUserId)
+        </dd class>
+    </dl>
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="FeedbackId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-controller="Imoveis" asp-action="Details" asp-route-id="@Model.ImovelId">De volta para o Imovel</a>
+    </form>
+</div>

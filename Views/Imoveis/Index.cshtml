@@ -76,14 +76,11 @@
                     <a asp-action="Details" asp-route-id="@item.ImovelId">Details</a>
                     @if (item.ApplicationUserId == helper.userId || helper.isAdmin)
                     {
-                        <html>
-                        |
-                    </html>
-
+                        @Html.Raw("|")
                         <a asp-action="Delete" asp-route-id="@item.ImovelId">Delete</a>
                     }
-            </td>
-        </tr>
+                </td>
+            </tr>
         }
-</tbody>
+    </tbody>
 </table>

@@ -34,6 +34,12 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ApplicationUser.Email)
         </dd>
+        <dt class="col-sm-2">
+            Avaliação
+        </dt>
+        <dd class="col-sm-10">
+            @Pweb_2021.Models.Feedback.MediaEstrelas_string(ViewBag.comentarios)
+        </dd>
     </dl>
 </div>
 
@@ -65,21 +71,49 @@
 
 </div>
 
+<div class="container">
+    @foreach (Feedback comentario in ViewBag.comentarios)
+    {
+        <div class="card">
+            <div>
+                <p>@comentario.Comentario</p>
+            </div>
+            <div class="row">
+                <div class="col-sm mx-auto">
+                    @comentario.MakeStarts()
+                </div>
+                <div class="col-sm mx-auto">
+                    <b>Author:</b> @comentario.ApplicationUser.UserName
+                </div>
+                @if (comentario.ApplicationUserId == ViewBag.helper.userId)
+                {
+                    <div class="col-sm mx-auto">
+
+                        <a asp-controller="Feedbacks" asp-action="Edit" asp-route-id="@comentario.FeedbackId">Editar</a>
+                    </div>
+                    <div class="col-sm mx-auto">
+
+                        <a asp-controller="Feedbacks" asp-action="Delete" asp-route-id="@comentario.FeedbackId">Apagar</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
 <div>
     @if (Model.ApplicationUserId == ViewBag.helper.userId || ViewBag.helper.isAdmin)
     {
         <a asp-action="Edit" asp-route-id="@Model.ImovelId">Editar</a>
-        <html>
-        |
-    </html>
+        @Html.Raw("|")
     }
     @if (ViewBag.helper.isCliente)
     {
-    <a asp-controller="Reserva" asp-action="Create" asp-route-id="@Model.ImovelId">Reservar</a>
-    <html>
-     |
-    </html>
+        <a asp-controller="Reserva" asp-action="Create" asp-route-id="@Model.ImovelId">Reservar</a>
+        @Html.Raw("|")
+        <a asp-controller="Feedbacks" asp-action="Create" asp-route-id="@Model.ImovelId">Comentar</a>
+        @Html.Raw("|")
     }
 
-<a asp-action="Index">Voltar para Lista</a>
+    <a asp-action="Index">Voltar para Lista</a>
 </div>

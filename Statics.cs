@@ -17,6 +17,7 @@ namespace Pweb_2021.Statics
             Buffer.BlockCopy(second, 0, bytes, first.Length, second.Length);
             return bytes;
         }
+        
     }
 
     public class Roles
