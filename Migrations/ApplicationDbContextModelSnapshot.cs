@@ -324,6 +324,9 @@ namespace Pweb_2021.Migrations
                     b.Property<DateTime>("DataInicial")
                         .HasColumnType("datetime2");
 
+                    b.Property<byte>("Estado")
+                        .HasColumnType("tinyint");
+
                     b.Property<int>("ImovelId")
                         .HasColumnType("int");
 

@@ -17,6 +17,14 @@ namespace Pweb_2021.Models
         [Range(0,10)]
         public byte avaliacao { get; set; }
 
+        //0 - rejeitado
+        //1 - em espera por confirmar
+        //2 - confirmado
+        //3 - com o cliente
+        //4 - devolvido do cliente
+        [Range(0,4)]
+        public byte Estado { get; set; }
+
         public string comentario { get; set; }
 
         //imovel a reservar
