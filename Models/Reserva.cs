@@ -16,7 +16,8 @@ namespace Pweb_2021.Models
 
         //para o gestor
         [Range(0, 10)]
-        public byte avaliacao { get; set; }
+        [Display(Name ="Avaliação")]
+        public byte Avaliacao { get; set; }
 
         //0 - rejeitado
         //1 - em espera por confirmar
@@ -26,7 +27,8 @@ namespace Pweb_2021.Models
         [Range(0, 4)]
         public byte Estado { get; set; }
 
-        public string comentario { get; set; }
+        [Display(Name ="Comentário")]
+        public string Comentario { get; set; }
 
         //imovel a reservar
         [Required]

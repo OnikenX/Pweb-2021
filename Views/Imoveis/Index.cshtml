@@ -69,8 +69,10 @@
                             {
                                 <a asp-action="Edit" asp-route-id="@item.ImovelId">Edit</a>
                             }
-
-                            <a asp-controller="Reservas" asp-action="Create" asp-route-id="@item.ImovelId">Reservar</a>
+                            @if (helper.isCliente)
+                            {
+                                <a asp-controller="Reservas" asp-action="Create" asp-route-id="@item.ImovelId">Reservar</a>
+                            }
                         }
                     }
                     <a asp-action="Details" asp-route-id="@item.ImovelId">Details</a>

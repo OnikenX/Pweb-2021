@@ -80,6 +80,7 @@ namespace Pweb_2021.Controllers
 
         // GET: Reservas/Create
 
+        [Authorize(Roles = Statics.Roles.CLIENTE)]
         public IActionResult Create(int? id)
         {
             if (id == null)
@@ -100,6 +101,7 @@ namespace Pweb_2021.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Statics.Roles.CLIENTE)]
         public async Task<IActionResult> Create([Bind("ReservaId,DataInicial,DataFinal,ImovelId,ApplicationUserId")] Reserva reserva)
         {
             if (ModelState.IsValid)
@@ -114,6 +116,9 @@ namespace Pweb_2021.Controllers
         }
 
         // GET: Reservas/Edit/5
+        [Authorize(Roles = Statics.Roles.FUNCIONARIO)]
+        [Authorize(Roles = Statics.Roles.GESTOR)]
+        [Authorize(Roles = Statics.Roles.ADMIN)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -136,7 +141,10 @@ namespace Pweb_2021.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReservaId,DataInicial,DataFinal,ImovelId,ApplicationUserId")] Reserva reserva)
+        [Authorize(Roles = Statics.Roles.FUNCIONARIO)]
+        [Authorize(Roles = Statics.Roles.GESTOR)]
+        [Authorize(Roles = Statics.Roles.ADMIN)]
+        public async Task<IActionResult> Edit(int id, [Bind("ReservaId,DataInicial,DataFinal,Comentario,Estado,ImovelId,ApplicationUserId")] Reserva reserva)
         {
             if (id != reserva.ReservaId)
             {
@@ -168,36 +176,40 @@ namespace Pweb_2021.Controllers
             return View(reserva);
         }
 
+
+
+
         // GET: Reservas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var reserva = await _context.Reservas
-                .Include(r => r.ApplicationUser)
-                .Include(r => r.Imovel)
-                .FirstOrDefaultAsync(m => m.ReservaId == id);
-            if (reserva == null)
-            {
-                return NotFound();
-            }
+        //    var reserva = await _context.Reservas
+        //        .Include(r => r.ApplicationUser)
+        //        .Include(r => r.Imovel)
+        //        .FirstOrDefaultAsync(m => m.ReservaId == id);
+        //    if (reserva == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(reserva);
-        }
+        //    return View(reserva);
+        //}
 
-        // POST: Reservas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var reserva = await _context.Reservas.FindAsync(id);
-            _context.Reservas.Remove(reserva);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //// POST: Reservas/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var reserva = await _context.Reservas.FindAsync(id);
+        //    _context.Reservas.Remove(reserva);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool ReservaExists(int id)
         {

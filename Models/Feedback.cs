@@ -40,7 +40,7 @@ namespace Pweb_2021.Models
         }
         public static string MediaEstrelas_string(List<Feedback> feedbacks)
         {
-            return MakeStarts((int)(float)Math.Round((Decimal)MediaEstrelas(feedbacks), 0, MidpointRounding.AwayFromZero));
+            return MakeStarts((int)(float)Math.Round(MediaEstrelas(feedbacks), 0, MidpointRounding.AwayFromZero));
         }
         public static float MediaEstrelas(List<Feedback> feedbacks)
         {
@@ -49,7 +49,7 @@ namespace Pweb_2021.Models
             {
                 todasEstrelas += feedback.Estrelas;
             }
-            return (float)Math.Round((Decimal)(((float)todasEstrelas) / ((float)feedbacks.Count)), 2, MidpointRounding.AwayFromZero);
+            return (float)Math.Round((((float)todasEstrelas) / ((float)feedbacks.Count)), 2, MidpointRounding.AwayFromZero);
         }
     }
 }

@@ -318,6 +318,12 @@ namespace Pweb_2021.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<byte>("Avaliacao")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Comentario")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DataFinal")
                         .HasColumnType("datetime2");
 
@@ -329,12 +335,6 @@ namespace Pweb_2021.Migrations
 
                     b.Property<int>("ImovelId")
                         .HasColumnType("int");
-
-                    b.Property<byte>("avaliacao")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("comentario")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ReservaId");
 
