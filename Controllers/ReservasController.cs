@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -54,11 +55,71 @@ namespace Pweb_2021.Controllers
         {
             var helper = new HelperClass(this);
             ViewBag.helper = helper;
-            var applicationDbContext = await _context.Reservas.Include(r => r.ApplicationUser).Include(r => r.Imovel).ToListAsync();
+
+
+
+            var applicationDbContext = await _context.Reservas.Include(rs => rs.Feedbacks).Include(r => r.ApplicationUser).Include(r => r.Imovel).ToListAsync();
             var listaReserva = applicationDbContext.Where(rs => reservaIdsequals(rs)).ToList();
+
+            //verificar quais as reservas que n tem reservas
+            var nofeedyet = new List<int>();
+            foreach (var reserva in listaReserva)
+            {
+                if (reserva.Feedbacks.Count >= 2)
+                {
+                    continue;
+                }
+                else if (reserva.Feedbacks.Count == 0)
+                {
+                    nofeedyet.Add(reserva.ReservaId);
+                    continue;
+                }
+
+                var userid = reserva.Feedbacks[0].ApplicationUserId;
+                if (helper.userId == userid)
+                {
+                    continue;
+                }
+
+                var roles = await _context.UserRoles.Where(ur => ur.UserId == userid).ToListAsync();
+                string[] roles_superiores = { Statics.Roles.GESTOR, Statics.Roles.FUNCIONARIO, Statics.Roles.ADMIN };
+                var anyRoleIsClient = await AnyRoleIsClient(roles);
+
+                if (helper.isCliente)
+                {
+                    if (!anyRoleIsClient)
+                    {
+                        nofeedyet.Add(reserva.ReservaId);
+                    }
+                }
+                else
+                {
+                    if (anyRoleIsClient)
+                    {
+                        nofeedyet.Add(reserva.ReservaId);
+                    }
+                }
+            }
+
+            ViewData["nofeedyet"] = nofeedyet;
             ViewData["reservas"] = listaReserva;
             return View();
         }
+
+        private async Task<bool> AnyRoleIsClient(List<IdentityUserRole<string>> roles)
+        {
+            foreach (var role in roles)
+            {
+                var userRole = await _context.Roles.FindAsync(role.RoleId);
+                if (userRole.Name == Statics.Roles.CLIENTE)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
 
         // GET: Reservas/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -181,7 +242,7 @@ namespace Pweb_2021.Controllers
             do
             {
                 var reserva = await _context.Reservas.FindAsync(valor.ReservaId);
-               if (reserva == null)
+                if (reserva == null)
                 {
                     break;
                 }
@@ -193,37 +254,44 @@ namespace Pweb_2021.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Reservas/Delete/5
+        //GET: Reservas/Delete/5
+        [Authorize(Roles = Statics.Roles.ADMIN)]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var reserva = await _context.Reservas
+                .Include(r => r.ApplicationUser)
+                .Include(r => r.Imovel)
+                .FirstOrDefaultAsync(m => m.ReservaId == id);
+            if (reserva == null)
+            {
+                return NotFound();
+            }
 
-        //    var reserva = await _context.Reservas
-        //        .Include(r => r.ApplicationUser)
-        //        .Include(r => r.Imovel)
-        //        .FirstOrDefaultAsync(m => m.ReservaId == id);
-        //    if (reserva == null)
-        //    {
-        //        return NotFound();
-        //    }
+            return View(reserva);
+        }
 
-        //    return View(reserva);
-        //}
+        // POST: Reservas/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Statics.Roles.ADMIN)]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
 
-        //// POST: Reservas/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var reserva = await _context.Reservas.FindAsync(id);
-        //    _context.Reservas.Remove(reserva);
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+            var reserva = await _context.Reservas.FindAsync(id);
+            var feedbacks = await _context.Feedbacks.Where(fb => fb.ReservaId == reserva.ReservaId).ToListAsync();
+            foreach (var feedback in feedbacks)
+            {
+                _context.Feedbacks.Remove(feedback);
+            }
+            _context.Reservas.Remove(reserva);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
 
         private bool ReservaExists(int id)
         {

@@ -56,7 +56,6 @@
                                 @if (i == 1)
                                 {//corfirmar ou rejeitar reserva
                                     <div class="row">
-
                                         <form asp-action="UpdateEstado" class="col">
                                             <input type="hidden" asp-for="ReservaId" class="col-1" value="@reserva.ReservaId" />
                                             <input type="hidden" asp-for="Estado" class="col-1" value="2" />
@@ -68,13 +67,35 @@
                                             <input type="submit" value="Rejeitar" class="btn btn-danger col" />
                                         </form>
                                     </div>
-
+                                }
+                                @if(i == 2)
+                                {//dar chave
+                                        <form asp-action="UpdateEstado" class="col">
+                                            <input type="hidden" asp-for="ReservaId" class="col-1" value="@reserva.ReservaId" />
+                                            <input type="hidden" asp-for="Estado" class="col-1" value="2" />
+                                            <input type="submit" value="Aceitar" class="btn btn-success col" />
+                                        </form>
+                                }
+                                @if(i == 3)
+                                {
+                                       <form asp-action="UpdateEstado" class="col">
+                                            <input type="hidden" asp-for="ReservaId" class="col-1" value="@reserva.ReservaId" />
+                                            <input type="hidden" asp-for="Estado" class="col-1" value="2" />
+                                            <input type="submit" value="Aceitar" class="btn btn-success col" />
+                                        </form>
+                                }
+                                @if(i == 4)
+                                {
+                                    
+                                }
+                                @if (helper.isAdmin)
+                                {
+                                    <a asp-action="Delete" asp-route-id="@reserva.ReservaId">Delete</a>
                                 }
                             }
-                            @*//<a asp-action="Details" asp-route-id="@reserva.ReservaId">Details</a> |
-                            //<a asp-action="Delete" asp-route-id="@reserva.ReservaId">Delete</a>*@
-                        </td>
+                            @*<a asp-action="Details" asp-route-id="@reserva.ReservaId">Details</a>*@
 
+                        </td>
                     </tr>
                 }
             }
