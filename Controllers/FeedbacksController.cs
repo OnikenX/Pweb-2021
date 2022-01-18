@@ -72,13 +72,15 @@ namespace Pweb_2021.Controllers
             if (ModelState.IsValid)
             {
                 feedback.ApplicationUserId = HelperClass.getUserId(this);
-                _context.Add(feedback);
+                
                 var reserva = await _context.Reservas.FindAsync(feedback.ReservaId);
                 if (reserva == null)
                 {
                     ModelState.AddModelError(string.Empty, "A reserva relacionada com este comentario não existe.");
                     return View(feedback);
                 }
+                feedback.AuthorIsCliente = new HelperClass(this).isCliente;
+                _context.Add(feedback);
                 await _context.SaveChangesAsync();
                 return await VoltarLista(feedback);
             }
