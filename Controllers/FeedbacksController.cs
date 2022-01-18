@@ -23,7 +23,7 @@ namespace Pweb_2021.Controllers
         // GET: Feedbacks
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Feedbacks.Include(f => f.ApplicationUser).Include(f => f.Reserva).Include(f=> f.Reserva.Imovel);
+            var applicationDbContext = _context.Feedbacks.Include(f => f.ApplicationUser).Include(f => f.Reserva).Include(f => f.Reserva.Imovel);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -47,7 +47,7 @@ namespace Pweb_2021.Controllers
 
             return View(feedback);
         }
-
+        [Authorize]
         // GET: Feedbacks/Create
         public IActionResult Create(int? id)
         {
@@ -65,7 +65,7 @@ namespace Pweb_2021.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize(Roles = Statics.Roles.CLIENTE)]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Estrelas,Comentario,ReservaId")] Feedback feedback)
         {
@@ -73,12 +73,28 @@ namespace Pweb_2021.Controllers
             {
                 feedback.ApplicationUserId = HelperClass.getUserId(this);
                 _context.Add(feedback);
+                var reserva = await _context.Reservas.FindAsync(feedback.ReservaId);
+                if (reserva == null)
+                {
+                    ModelState.AddModelError(string.Empty, "A reserva relacionada com este comentario não existe.");
+                    return View(feedback);
+                }
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
+                return await VoltarLista(feedback);
             }
             return View(feedback);
         }
-
+        public async Task<IActionResult> VoltarLista(Feedback feedback)
+        {
+            if (new HelperClass(this).isCliente)
+            {
+                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
+            }
+            else
+            {
+                return RedirectToAction("UserDetails", "Reservas", new { id = feedback.Reserva.ApplicationUserId });
+            }
+        }
         // GET: Feedbacks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -127,7 +143,7 @@ namespace Pweb_2021.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
+                return await VoltarLista(feedback);
             }
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", feedback.ApplicationUserId);
             ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.Reserva.ImovelId);
@@ -157,40 +173,43 @@ namespace Pweb_2021.Controllers
         }
 
         // POST: Feedbacks/Delete/5
-        
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            
+
             var feedback = await _context.Feedbacks.FindAsync(id);
-            if(feedback == null)
+            if (feedback == null)
             {
                 return NotFound();
             }
             if (!FeedbackDoUser(feedback))
             {
-                return NotFound();   
+                return NotFound();
             }
             _context.Feedbacks.Remove(feedback);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Details), "Imoveis", new {id = feedback.Reserva.ImovelId});
+            return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
         }
 
         private bool FeedbackDoUser(Feedback Feedback)
         {
             var helper = new HelperClass(this);
-            if (helper.isCliente){
+            if (helper.isCliente)
+            {
                 return helper.userId == Feedback.ApplicationUserId;
 
-            } else if (helper.isAdmin)
+            }
+            else if (helper.isAdmin)
             {
                 return true;
             }
             else if (helper.isFunc)
             {
                 return Feedback.ApplicationUserId == helper.userId;
-            } else if (helper.isGestor)
+            }
+            else if (helper.isGestor)
             {
                 return Feedback.ApplicationUser.GestorId == helper.userId || Feedback.ApplicationUserId == helper.userId;
             }

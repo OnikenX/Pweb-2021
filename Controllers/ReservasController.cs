@@ -16,10 +16,11 @@ namespace Pweb_2021.Controllers
     public class ReservasController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public ReservasController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager; 
+        public ReservasController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         private bool reservaIdsequals(Reserva rs)
@@ -50,6 +51,42 @@ namespace Pweb_2021.Controllers
             }
         }
 
+        //detalhes de um user como as suas reviews e tal
+        public async Task<IActionResult> UserDetails(string? id)
+        {
+            if (id == null) {
+                return NotFound();
+            }
+            var user = await _userManager.FindByIdAsync((string)id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var comentarios = await _context.Feedbacks.Include(fb => fb.Reserva)
+                .Include(fb => fb.Reserva.Imovel).Include(fb => fb.ApplicationUser)
+                .Where(fb => fb.Reserva.ApplicationUserId == id).ToListAsync();
+            ViewData["comentarios"] = comentarios;
+            ViewBag.helper = new HelperClass(this);
+            return View(user);
+        }
+
+        private async Task<bool> UserIsCliente(ApplicationUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var isCliente = true;
+            if (!roles.Contains(Statics.Roles.CLIENTE))
+            {
+                isCliente = false;
+            }
+            return isCliente;
+
+        }
+
+        private bool UserExists(string id)
+        {
+            return _context.Users.Any(e => e.Id == id);
+        }
         // GET: Reservas
         public async Task<IActionResult> Index()
         {

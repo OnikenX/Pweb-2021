@@ -46,7 +46,7 @@
                             @Html.DisplayFor(modelItem => reserva.Imovel.Nome)
                         </td>
                         <td>
-                            <a asp-controller="Users" asp-action="Details" asp-route-id="@reserva.ApplicationUserId"> @Html.DisplayFor(modelItem => reserva.ApplicationUser.UserName) (Detanhes)</a>
+                            <a asp-action="UserDetails" asp-route-id="@reserva.ApplicationUserId"> @Html.DisplayFor(modelItem => reserva.ApplicationUser.UserName) (Detanhes)</a>
                         </td>
                         <td>
                             @reserva.Estado_string()

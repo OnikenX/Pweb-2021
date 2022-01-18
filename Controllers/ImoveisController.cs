@@ -57,7 +57,9 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
-            ViewData["comentarios"] = await _context.Feedbacks.Where(fb => fb.Reserva.ImovelId == id).Include(fb => fb.ApplicationUser).ToListAsync();
+            ViewData["comentarios"] = await _context.Feedbacks
+                .Where(fb => fb.Reserva.ImovelId == id)
+                .Include(fb => fb.ApplicationUser).ToListAsync();
             ViewData["imagens"] = await _context.ImovelImgs
                 .Where(img => img.ImovelId == id).ToListAsync();
             ViewBag.helper = new HelperClass(this);
@@ -103,7 +105,6 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
-
             var imovel = await _context.Imoveis.FindAsync(id);
             if (imovel == null)
             {

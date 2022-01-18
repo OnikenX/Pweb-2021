@@ -1,0 +1,64 @@
+﻿@model Pweb_2021.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Reserva</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+    </dl>
+</div>
+
+
+<div class="container">
+    @foreach (Feedback comentario in ViewBag.comentarios)
+    {
+        <div class="card">
+            <div>
+                <p>@comentario.Comentario</p>
+            </div>
+            <div class="row">
+                <div class="col-sm mx-auto">
+                    @comentario.MakeStarts()
+                </div>
+                <div class="col-sm mx-auto">
+                    <b>Author:</b> @comentario.ApplicationUser.UserName
+                </div>
+                @if (comentario.ApplicationUserId == ViewBag.helper.userId)
+                {
+                    <div class="col-sm mx-auto">
+
+                        <a asp-controller="Feedbacks" asp-action="Edit" asp-route-id="@comentario.FeedbackId">Editar</a>
+                    </div>
+                    <div class="col-sm mx-auto">
+
+                        <a asp-controller="Feedbacks" asp-action="Delete" asp-route-id="@comentario.FeedbackId">Apagar</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+
+<div>
+    
+    @if (ViewBag.helper.isAdmin)
+    {
+        <a asp-action="Index">Voltar à lista de utilizadores</a>    
+    }else{
+        <a asp-controller="Reservas" asp-action="Index">Voltar à lista de reservas</a>    
+    }
+
+    
+</div>
