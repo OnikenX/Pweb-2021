@@ -53,9 +53,11 @@ namespace Pweb_2021.Controllers
         public async Task<IActionResult> Index()
         {
             var helper = new HelperClass(this);
+            ViewBag.helper = helper;
             var applicationDbContext = await _context.Reservas.Include(r => r.ApplicationUser).Include(r => r.Imovel).ToListAsync();
             var listaReserva = applicationDbContext.Where(rs => reservaIdsequals(rs)).ToList();
-            return View(listaReserva);
+            ViewData["reservas"] = listaReserva;
+            return View();
         }
 
         // GET: Reservas/Details/5
@@ -91,8 +93,6 @@ namespace Pweb_2021.Controllers
             ViewBag.helper = new HelperClass(this);
 
             ViewBag.helper.extraId1 = (int)id;
-            //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
-            //ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
             return View();
         }
 
@@ -106,19 +106,18 @@ namespace Pweb_2021.Controllers
         {
             if (ModelState.IsValid)
             {
+                reserva.Estado = 1;
                 _context.Add(reserva);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", reserva.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", reserva.ImovelId);
+            ViewBag.helper = new HelperClass(this);
+            ViewBag.helper.extraId1 = reserva.ImovelId;
             return View(reserva);
         }
 
         // GET: Reservas/Edit/5
-        [Authorize(Roles = Statics.Roles.FUNCIONARIO)]
-        [Authorize(Roles = Statics.Roles.GESTOR)]
-        [Authorize(Roles = Statics.Roles.ADMIN)]
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR_FUNCIONARIO)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -141,9 +140,7 @@ namespace Pweb_2021.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = Statics.Roles.FUNCIONARIO)]
-        [Authorize(Roles = Statics.Roles.GESTOR)]
-        [Authorize(Roles = Statics.Roles.ADMIN)]
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR_FUNCIONARIO)]
         public async Task<IActionResult> Edit(int id, [Bind("ReservaId,DataInicial,DataFinal,Comentario,Estado,ImovelId,ApplicationUserId")] Reserva reserva)
         {
             if (id != reserva.ReservaId)
@@ -176,11 +173,28 @@ namespace Pweb_2021.Controllers
             return View(reserva);
         }
 
-
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Statics.Roles.GESTOR_FUNCIONARIO)]
+        public async Task<IActionResult> UpdateEstado([Bind("ReservaId,Estado")] Reserva valor)
+        {
+            do
+            {
+                var reserva = await _context.Reservas.FindAsync(valor.ReservaId);
+               if (reserva == null)
+                {
+                    break;
+                }
+                reserva.Estado = valor.Estado;
+                _context.Reservas.Update(reserva);
+                _context.SaveChanges();
+                break;
+            } while (false);
+            return RedirectToAction(nameof(Index));
+        }
 
         // GET: Reservas/Delete/5
-        
+
         //public async Task<IActionResult> Delete(int? id)
         //{
         //    if (id == null)

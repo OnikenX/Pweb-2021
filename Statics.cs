@@ -31,6 +31,9 @@ namespace Pweb_2021.Statics
         public const string FUNCIONARIO = "func";
         public const string GESTOR = "gestor";
         public const string CLIENTE = "cliente";
+        public const string ADMIN_GESTOR = "admin,gestor";
+        public const string GESTOR_FUNCIONARIO = "gestor,func";
+        public const string ADMIN_GESTOR_FUNCIONARIO = "admin,gestor,func";
     }
 
     class Root

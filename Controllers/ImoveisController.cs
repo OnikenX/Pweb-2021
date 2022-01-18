@@ -68,7 +68,6 @@ namespace Pweb_2021.Controllers
         // GET: Imoveis/Create
         public IActionResult Create()
         {
-            //ViewBag.ApplicationUserId = new SelectList(_context.Users, "Id", "Id");
             ViewBag.helper = new HelperClass(this);
             return View();
         }
@@ -84,8 +83,6 @@ namespace Pweb_2021.Controllers
         {
             imovel.ApplicationUser = await _context.Users.FindAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             imovel.ApplicationUserId = imovel.ApplicationUser.Id;
-            
-
             if (ModelState.IsValid)
             {
                 _context.Add(imovel);
@@ -154,8 +151,8 @@ namespace Pweb_2021.Controllers
         }
 
         // GET: Imoveis/Delete/5
-        [Authorize(Roles = Statics.Roles.GESTOR)]
-        [Authorize(Roles = Statics.Roles.ADMIN)]
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR)]
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -175,13 +172,29 @@ namespace Pweb_2021.Controllers
         }
 
         // POST: Imoveis/Delete/5
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR)]
         [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = Statics.Roles.GESTOR)]
-        [Authorize(Roles = Statics.Roles.ADMIN)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var imovel = await _context.Imoveis.FindAsync(id);
+            var reservas = await _context.Reservas.Where(rs => rs.ImovelId == id).ToListAsync();
+            
+            foreach(var reserva in reservas)
+            {
+                var feedbacks = await _context.Feedbacks.Where(fb => fb.ReservaId == reserva.ReservaId).ToListAsync();
+                foreach (var feedback in feedbacks)
+                {
+                    _context.Feedbacks.Remove(feedback);
+                }
+                _context.Reservas.Remove(reserva);
+            }
+            var imagens = await _context.ImovelImgs.Where(img => img.ImovelImgId == id).ToListAsync(); 
+            foreach(var imagem in imagens)
+            {
+                DeleteFile(imagem.pathToImage);
+                _context.Remove(imagem);
+            }
             _context.Imoveis.Remove(imovel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -203,7 +216,7 @@ namespace Pweb_2021.Controllers
         ///////////////////////////////
         ///////////////////////////////
 
-        [Authorize(Roles = Statics.Roles.GESTOR)]
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR)]
         // GET: Imoveis/Create
         public async Task<IActionResult> AddImg(int? id)
         {
@@ -261,6 +274,8 @@ namespace Pweb_2021.Controllers
             return View(model);
         }
 
+
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR)]
         // GET: ImovelImgs/Delete/5
         public async Task<IActionResult> DeleteImg(int? id)
         {
@@ -282,6 +297,7 @@ namespace Pweb_2021.Controllers
 
         // POST: ImovelImgs/Delete/5
         [HttpPost, ActionName("DeleteImg")]
+        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteImgConfirmed(int id)
         {
@@ -294,6 +310,8 @@ namespace Pweb_2021.Controllers
             return RedirectToAction(nameof(Edit), new { id = imovel_id });
         }
 
+
+        
         private string UploadedFile(ImovelImgViewModel model)
         {
             string uniqueFileName = null;
@@ -311,7 +329,7 @@ namespace Pweb_2021.Controllers
             return uniqueFileName;
         }
 
-
+       
         //apagar a imagem do fs
         private bool DeleteFile(string fileName)
         {
