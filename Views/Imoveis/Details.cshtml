@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Detalhes</h1>
 
 <div>
     <h4>Imovel</h4>
@@ -82,7 +82,7 @@
                     @comentario.MakeStarts()
                 </div>
                 <div class="col-sm mx-auto">
-                    <b>Author:</b> @comentario.ApplicationUser.UserName
+                    <b>Autor:</b> @comentario.ApplicationUser.UserName
                 </div>
                 @if (comentario.ApplicationUserId == ViewBag.helper.userId)
                 {
