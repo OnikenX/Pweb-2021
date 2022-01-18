@@ -30,7 +30,7 @@ namespace Pweb_2021.Controllers
         public async Task<IActionResult> Index()
         {
             var helper = new HelperClass(this);
-            var  userRoles =await  _context.UserRoles.ToListAsync();
+            var userRoles = await _context.UserRoles.ToListAsync();
             ViewData["userRoles"] = userRoles;
             var roles = await _context.Roles.ToListAsync();
             ViewData["roles"] = roles;
@@ -154,10 +154,11 @@ namespace Pweb_2021.Controllers
                     }
 
                     var result_password_change =
-                    await _userManager.ChangePasswordAsync(
-                        user, user_new_info.Password,
-                        await _userManager.GeneratePasswordResetTokenAsync(user)
-                    );
+                      await _userManager.ResetPasswordAsync(user,
+                                      await _userManager.GeneratePasswordResetTokenAsync(user),
+                                      user_new_info.Password
+                          );
+
                     if (!result_password_change.Succeeded)
                     {
                         foreach (var error in result_password_change.Errors)

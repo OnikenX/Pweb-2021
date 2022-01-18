@@ -212,10 +212,11 @@ namespace Pweb_2021.Controllers
                     }
 
                     var result_password_change =
-                    await _userManager.ChangePasswordAsync(
-                        user, user_new_info.Password,
-                        await _userManager.GeneratePasswordResetTokenAsync(user)
-                    );
+                        await _userManager.ResetPasswordAsync(user,
+                                        await _userManager.GeneratePasswordResetTokenAsync(user),
+                                        user_new_info.Password
+                            );
+
                     if (!result_password_change.Succeeded)
                     {
                         foreach (var error in result_password_change.Errors)
