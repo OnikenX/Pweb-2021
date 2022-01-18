@@ -58,8 +58,6 @@ namespace Pweb_2021.Controllers
 
             var feedback = new Feedback();
             feedback.ReservaId = (int)id;
-            //ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
-            //ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId");
             return View(feedback);
         }
 
@@ -159,15 +157,44 @@ namespace Pweb_2021.Controllers
         }
 
         // POST: Feedbacks/Delete/5
-        [Authorize(Roles = Statics.Roles.CLIENTE)]
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            
             var feedback = await _context.Feedbacks.FindAsync(id);
+            if(feedback == null)
+            {
+                return NotFound();
+            }
+            if (!FeedbackDoUser(feedback))
+            {
+                return NotFound();   
+            }
             _context.Feedbacks.Remove(feedback);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Details), "Imoveis", new {id = feedback.Reserva.ImovelId});
+        }
+
+        private bool FeedbackDoUser(Feedback Feedback)
+        {
+            var helper = new HelperClass(this);
+            if (helper.isCliente){
+                return helper.userId == Feedback.ApplicationUserId;
+
+            } else if (helper.isAdmin)
+            {
+                return true;
+            }
+            else if (helper.isFunc)
+            {
+                return Feedback.ApplicationUserId == helper.userId;
+            } else if (helper.isGestor)
+            {
+                return Feedback.ApplicationUser.GestorId == helper.userId || Feedback.ApplicationUserId == helper.userId;
+            }
+            return false;
         }
 
         private bool FeedbackExists(int id)

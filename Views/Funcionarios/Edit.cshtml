@@ -50,31 +50,29 @@
 }
 
 <script type="text/javascript">
+    hideEmail();
+    hidePassword();
     function hidePassword() {
-        hideAction("password_group");
-        var button = document.getElementById("button_password");
-        console.log(button.checked);
+        hideAction("password_group", setValue("button_password"));
     }
 
     function hideEmail() {
-        hideAction("email_group");
-        var button = document.getElementById("button_email");
-        console.log(button.checked);
+        hideAction("email_group", setValue("button_email"));
+       
     }
-    function changeButtonStatus(button) {
-        if (button.value === "true") {
-            button.value = "false";
-        } else {
-            button.value = "true";
-        }
+    function setValue(id){
+        var button = document.getElementById(id);
+        button.value = button.checked;
+        console.log(button.checked);
+        return button.checked;
     }
 
-    function hideAction(id) {
+    function hideAction(id, status) {
         var x = document.getElementById(id);
-        if (x.style.display === "block") {
-            x.style.display = "none";
-        } else {
+        if (status) {
             x.style.display = "block";
+        } else {
+            x.style.display = "none";
         }
     }
 </script>

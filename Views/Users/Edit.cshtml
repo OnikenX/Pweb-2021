@@ -4,78 +4,75 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Editar</h1>
 
-<h4>Funcionario @Model.Email</h4>
+<h4>User @Model.Email</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <div class="row">
-                    <label asp-for="ChangeEmail" class="control-label col-6"></label>
-                    <input type="checkbox" asp-for="ChangeEmail" id="button_email_false" onclick="hideEmail()"  class="form-control col-4 btn btn-info" />
-                </div>
-            </div>
-            <div class="form-group" id="email_group" style="display:none;">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <label asp-for="ChangePassword" class="control-label col-6"></label>
-                    <input asp-for="ChangePassword" value="false" onclick="hidePassword()" id="button_password"  class="form-control col-4 btn btn-info" />
-                </div>
-                <span asp-validation-for="ChangePassword" class="text-danger"></span>
-            </div>
-
-            <div class="form-group" id="password_group" style="display:none;">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <div class="row">
+            <label asp-for="ChangeEmail" class="control-label col-6"></label>
+            <input type="checkbox" asp-for="ChangeEmail" onclick="hideEmail()" id="button_email" class="form-control" />
+        </div>
     </div>
-</div>
+    <div class="form-group" id="email_group" style="display:none;">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <label asp-for="ChangePassword" class="control-label col-6"></label>
+            <input asp-for="ChangePassword" value="false" onclick="hidePassword()" id="button_password" class="form-control col-4 btn btn-info" />
+        </div>
+        <span asp-validation-for="ChangePassword" class="text-danger"></span>
+    </div>
+    <div class="form-group" id="password_group" style="display:none;">
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
 
-<script>
-    function hidePassword() {
-        hideAction("password_group");
-        var button = document.getElementById("button_password");
-        console.log(button.);
-    }
 
-    function hideEmail() {
-        hideAction("email_group");
-        var button = document.getElementById("button_email").value);
-        console.log(button.value);
-    }
-    function changeButtonStatus(button) {
-        if (button.value === "true") {
-            button.value = "false";
-        } else {
-            button.value = "true";
-        }
-    }
-
-    function hideAction(id) {
-        var x = document.getElementById(id);
-        if (x.style.display === "block") {
-            x.style.display = "none";
-        } else {
-            x.style.display = "block";
-        }
-    }
-</script>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
+<script type="text/javascript">
+    hideEmail();
+    hidePassword();
+    function hidePassword() {
+        hideAction("password_group", setValue("button_password"));
+    }
+
+    function hideEmail() {
+        hideAction("email_group", setValue("button_email"));
+       
+    }
+    function setValue(id){
+        var button = document.getElementById(id);
+        button.value = button.checked;
+        console.log(button.checked);
+        return button.checked   ;
+    }
+
+    function hideAction(id, status) {
+        var x = document.getElementById(id);
+        if (status) {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
 }

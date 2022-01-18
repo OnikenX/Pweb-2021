@@ -168,7 +168,7 @@ namespace Pweb_2021.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ChangeEmail,Email,ChangePassword,Password")] EditUser user_new_info)
+        public async Task<IActionResult> Edit(string id, [Bind("Email,Password,ChangePassword,ChangeEmail")] EditUser user_new_info)
         {
             if (ModelState.IsValid)
             {
@@ -197,7 +197,6 @@ namespace Pweb_2021.Controllers
                             foreach (var error in result.Errors)
                             {
                                 ModelState.AddModelError(string.Empty, error.Description);
-
                             }
                             return View(user_new_info);
                         }
@@ -250,6 +249,8 @@ namespace Pweb_2021.Controllers
             [Display(Name = "Mudar Email")]
             public bool ChangeEmail { get; set; }
         }
+
+
 
         private bool UserExists(string id)
         {
