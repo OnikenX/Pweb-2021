@@ -18,8 +18,13 @@ namespace Pweb_2021.Models
         [MaxLength(5000)]
         public string Comentario { get; set; }
 
+        //author do feedback
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
+
+        //se o author for um cliente quer dizer que estes feedback é para o imovel, se não, o feedback refere-se ao cliente
+        public bool AuthorIsCliente { get; set; }
+
 
         public int ReservaId { get; set; }
         public Reserva Reserva{ get; set; }

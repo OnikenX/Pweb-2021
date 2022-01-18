@@ -234,6 +234,9 @@ namespace Pweb_2021.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("AuthorIsCliente")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Comentario")
                         .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
