@@ -5,12 +5,12 @@
 }
 
 
-<h1>Index</h1>
+<h1>Imóveis</h1>
 
 <p>
     @if (User.IsInRole(Pweb_2021.Statics.Roles.GESTOR))
     {
-        <a asp-action="Create">Create New</a>
+        <a asp-action="Create">Introduzir novo Imóvel</a>
     }
 </p>
 <table class="table">
@@ -67,7 +67,7 @@
                         {
                             @if (item.ApplicationUserId == helper.userId || helper.isAdmin)
                             {
-                                <a asp-action="Edit" asp-route-id="@item.ImovelId">Edit</a>
+                                <a asp-action="Edit" asp-route-id="@item.ImovelId">Editar</a>
                             }
                             @if (helper.isCliente)
                             {
@@ -75,11 +75,11 @@
                             }
                         }
                     }
-                    <a asp-action="Details" asp-route-id="@item.ImovelId">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.ImovelId">Detalhes</a>
                     @if (item.ApplicationUserId == helper.userId || helper.isAdmin)
                     {
                         @Html.Raw("|")
-                        <a asp-action="Delete" asp-route-id="@item.ImovelId">Delete</a>
+                        <a asp-action="Delete" asp-route-id="@item.ImovelId">Apagar</a>
                     }
                 </td>
             </tr>
