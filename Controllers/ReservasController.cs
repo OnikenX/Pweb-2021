@@ -16,7 +16,7 @@ namespace Pweb_2021.Controllers
     public class ReservasController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager; 
+        private readonly UserManager<ApplicationUser> _userManager;
         public ReservasController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
@@ -54,7 +54,8 @@ namespace Pweb_2021.Controllers
         //detalhes de um user como as suas reviews e tal
         public async Task<IActionResult> UserDetails(string? id)
         {
-            if (id == null) {
+            if (id == null)
+            {
                 return NotFound();
             }
             var user = await _userManager.FindByIdAsync((string)id);
@@ -92,8 +93,6 @@ namespace Pweb_2021.Controllers
         {
             var helper = new HelperClass(this);
             ViewBag.helper = helper;
-
-
 
             var applicationDbContext = await _context.Reservas.Include(rs => rs.Feedbacks).Include(r => r.ApplicationUser).Include(r => r.Imovel).ToListAsync();
             var listaReserva = applicationDbContext.Where(rs => reservaIdsequals(rs)).ToList();
@@ -137,7 +136,6 @@ namespace Pweb_2021.Controllers
                     }
                 }
             }
-            
 
             ViewData["nofeedyet"] = nofeedyet;
             ViewData["reservas"] = listaReserva;
@@ -203,13 +201,48 @@ namespace Pweb_2021.Controllers
         [Authorize(Roles = Statics.Roles.CLIENTE)]
         public async Task<IActionResult> Create([Bind("ReservaId,DataInicial,DataFinal,ImovelId,ApplicationUserId")] Reserva reserva)
         {
-            if (ModelState.IsValid)
+
+
+
+            do
             {
+                if (!ModelState.IsValid)
+                {
+                    break;
+                }
+                var time_span = (reserva.DataFinal - reserva.DataInicial);
+                if (time_span.TotalDays < 0)
+                {
+                    ModelState.AddModelError(string.Empty, "Não podes fazer escolher uma data final anterior à data inicial.");
+                    break;
+                }
+
+                var now = DateTime.Now;
+                if (reserva.DataFinal < now || reserva.DataInicial  < now){
+                    ModelState.AddModelError(string.Empty, "Um pouco para o impossivel marcar para uma data no passado, tenta uma data apartir de hoje.");
+                    break;
+                }
+                
+                var reservas = await _context.Reservas.Where(r => r.ImovelId == reserva.ImovelId && reserva.Estado > 1).ToListAsync();
+                
+                foreach (var outra_reserva in reservas)
+                {
+                    if (reserva.DataFinal <= outra_reserva.DataFinal && reserva.DataFinal >= outra_reserva.DataInicial ||
+                        reserva.DataInicial <= outra_reserva.DataFinal && reserva.DataInicial>= outra_reserva.DataInicial)
+                    {
+                        ModelState.AddModelError(string.Empty, $"Este estaço de tempo está ocupado, tenta algo antes de {outra_reserva.DataInicial} ou depois de {outra_reserva.DataFinal}.");
+                        goto Failure;
+                    }
+                }
                 reserva.Estado = 1;
                 _context.Add(reserva);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
+
+            } while (false);
+            
+            Failure:
+
             ViewBag.helper = new HelperClass(this);
             ViewBag.helper.extraId1 = reserva.ImovelId;
             return View(reserva);

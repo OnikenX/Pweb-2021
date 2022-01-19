@@ -25,15 +25,13 @@ namespace Pweb_2021.Controllers
             _context = context;
         }
 
-
         // GET: Imoveis
         public async Task<IActionResult> Index()
         {
             var helper = new HelperClass(this);
-            var applicationDbContext = _context.Users.Where(c => c.GestorId == helper.userId);
-            var users = await applicationDbContext.ToListAsync();
+            var funcionarios = await _context.Users.Where(c => c.GestorId == helper.userId && !c.Deleted).ToListAsync();
             ViewBag.helper = helper;
-            return View(users);
+            return View(funcionarios);
         }
 
         private object Helper(ref ImoveisController imoveisController)
@@ -64,9 +62,6 @@ namespace Pweb_2021.Controllers
         {
             return View();
         }
-
-
-
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -127,6 +122,9 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
+            var feedbacks = await _context.Feedbacks.Where(fb => !fb.AuthorIsCliente && fb.Reserva.ApplicationUserId == id).ToListAsync();
+
+            ViewData["avaliacao"] = Feedback.MediaEstrelas_string(feedbacks);
             return View(user);
         }
 

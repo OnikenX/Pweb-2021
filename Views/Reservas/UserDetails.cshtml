@@ -24,7 +24,10 @@
         </dd>
     </dl>
 </div>
-
+@if (@Model.Deleted)
+{
+    <h3 class="text-warning">Este utilizador foi apagado.</h3>
+}
 
 <div class="container">
     @foreach (Feedback comentario in ViewBag.comentarios)

@@ -77,7 +77,7 @@ namespace Pweb_2021.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Deleted = false };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 System.Diagnostics.Debug.WriteLine($"Debug: password input: `{Input.Password}`");
                 if (result.Succeeded)

@@ -21,21 +21,13 @@ namespace Pweb_2021.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(Index), "Imoveis");
         }
 
         public IActionResult Privacy()
         {
             return View();
         }
-
-        [Authorize]
-        public IActionResult Test()
-        {
-            ViewBag.helper = new HelperClass(this);
-            return View();
-        }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

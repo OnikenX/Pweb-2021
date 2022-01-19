@@ -10,9 +10,37 @@ namespace Pweb_2021.Models
 
         //datas
         [Required]
+        [Display(Name = "Data Inicial")]
         public DateTime DataInicial { get; set; }
+        public string DataInicial_string()
+        {
+            return Data_string(DataInicial.ToString());
+        }
+
         [Required]
+        [Display(Name = "Data Final")]
         public DateTime DataFinal { get; set; }
+
+
+        public string DataFinal_string()
+        {
+            return Data_string(DataFinal.ToString());
+        }
+
+        private string Data_string(string raw)
+        {
+            var parts = raw.Split(' ');
+            return parts[0];
+        }
+
+        public int TotalDays()
+        {
+            return (int)(DataFinal - DataInicial).TotalDays;
+        }
+        public int PrecoCalculado()
+        {
+            return TotalDays() * Imovel.Preco;
+        }
 
         //para o gestor
         [Range(0, 10)]
@@ -33,7 +61,6 @@ namespace Pweb_2021.Models
             {
                 case 0:
                     return "rejeitado";
-                    break;
                 case 1:
                     return "Em espera de confirmação";
                 case 2:

@@ -13,6 +13,7 @@ namespace Pweb_2021.Models
         public string GestorId { get; set; } //é para os funcionarios saberem quem é o chefe
         public ApplicationUser Gestor { get; set; }
         public List<ApplicationUser> Funcionarios { get; set; }
+        public bool Deleted {get;set;}
     }
     
 }

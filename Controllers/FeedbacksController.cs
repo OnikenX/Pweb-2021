@@ -110,8 +110,6 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", feedback.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.Reserva.ImovelId);
             return View(feedback);
         }
 
@@ -120,17 +118,26 @@ namespace Pweb_2021.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FeedbackId,Estrelas,Comentario,ApplicationUserId,ImovelId")] Feedback feedback)
+        public async Task<IActionResult> Edit(int id, [Bind("Estrelas,Comentario")] Feedback feedback)
         {
-            if (id != feedback.FeedbackId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var fb_db = await _context.Feedbacks.FindAsync(id);
+                    if(fb_db == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (!FeedbackDoUser(fb_db))
+                    {
+                        return NotFound();
+                    }
+
+                    fb_db.Estrelas = feedback.Estrelas;
+                    fb_db.Comentario= feedback.Comentario;
+
                     _context.Update(feedback);
                     await _context.SaveChangesAsync();
                 }
@@ -146,13 +153,11 @@ namespace Pweb_2021.Controllers
                     }
                 }
                 return await VoltarLista(feedback);
-            }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", feedback.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", feedback.Reserva.ImovelId);
+            }   
             return View(feedback);
         }
 
-        [Authorize(Roles = Statics.Roles.CLIENTE)]
+        [Authorize(Roles = Statics.Roles.FUNCIONARIO_CLIENTE)]
         // GET: Feedbacks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -161,14 +166,19 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
-            var feedback = await _context.Feedbacks
-                .Include(f => f.ApplicationUser)
-                .Include(f => f.Reserva)
-                .Include(f => f.Reserva.Imovel)
-                .FirstOrDefaultAsync(m => m.FeedbackId == id);
+
+
+            var feedback= await _context.Feedbacks.FindAsync(id);
+            
             if (feedback == null)
             {
                 return NotFound();
+            }
+            feedback.Reserva = await _context.Reservas.FindAsync(feedback.ReservaId);
+            feedback.ApplicationUser = await _context.Users.FindAsync(feedback.ApplicationUserId);
+            if (feedback.Reserva != null)
+            {
+                feedback.Reserva.Imovel = await _context.Imoveis.FindAsync(feedback.Reserva.ImovelId);
             }
 
             return View(feedback);
@@ -190,11 +200,19 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
+            feedback.Reserva = await _context.Reservas.FindAsync(feedback.ReservaId);
+            feedback.ApplicationUser = await _context.Users.FindAsync(feedback.ApplicationUserId);
+            if (feedback.Reserva != null)
+            {
+                feedback.Reserva.Imovel = await _context.Imoveis.FindAsync(feedback.Reserva.ImovelId);
+            }
             _context.Feedbacks.Remove(feedback);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Details), "Imoveis", new { id = feedback.Reserva.ImovelId });
         }
 
+
+        //verifica se o user tem permissoes sobre o item
         private bool FeedbackDoUser(Feedback Feedback)
         {
             var helper = new HelperClass(this);

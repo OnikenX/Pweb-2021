@@ -29,6 +29,7 @@ namespace Pweb_2021
         public void ConfigureServices(IServiceCollection services)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "AppData");
+            
             bool secureLogin = false;
 
             services.AddDbContext<ApplicationDbContext>(options =>

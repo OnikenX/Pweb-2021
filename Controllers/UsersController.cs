@@ -34,7 +34,7 @@ namespace Pweb_2021.Controllers
             ViewData["userRoles"] = userRoles;
             var roles = await _context.Roles.ToListAsync();
             ViewData["roles"] = roles;
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users.Where(usr => !usr.Deleted).ToListAsync();
             ViewBag.helper = helper;
             return View(users);
         }
@@ -42,24 +42,6 @@ namespace Pweb_2021.Controllers
         private object Helper(ref ImoveisController imoveisController)
         {
             throw new NotImplementedException();
-        }
-
-        // GET: Imoveis/Details/5
-        public async Task<IActionResult> Details(string? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
         }
 
         // GET: Users/Delete/5
@@ -87,7 +69,8 @@ namespace Pweb_2021.Controllers
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var user = await _context.Users.FindAsync(id);
-            _context.Users.Remove(user);
+            user.Deleted = true;
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

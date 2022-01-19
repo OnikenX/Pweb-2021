@@ -21,6 +21,8 @@
             <th>
                 @Html.DisplayNameFor(model => model.ApplicationUser)
             </th>
+            <th>Dias</th>
+            <th>Preço total</th>
             <th>Estado</th>
             <th></th>
         </tr>
@@ -37,10 +39,10 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => reserva.DataInicial)
+                            @reserva.DataInicial_string()
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => reserva.DataFinal)
+                            @reserva.DataFinal_string()
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => reserva.Imovel.Nome)
@@ -54,6 +56,12 @@
                             {
                                 <a asp-action="UserDetails" asp-route-id="@reserva.ApplicationUserId"> @Html.DisplayFor(modelItem => reserva.ApplicationUser.UserName) (Detanhes)</a>
                             }
+                        </td>
+                        <td>
+                            @reserva.TotalDays() dias
+                        </td>
+                        <td>
+                            @reserva.PrecoCalculado() €
                         </td>
                         <td>
                             @reserva.Estado_string()
@@ -92,27 +100,28 @@
                                         <input type="submit" value="Imóvel Devolvido" class="btn btn-success col" />
                                     </form>
                                 }
-                                @if (i == 4)
-                                {// comentar
-                                    @if (nofeedyet.Any(rs => rs == reserva.ReservaId))
-                                    {
-                                        <a asp-controller="Feedbacks" asp-action="Create" asp-route-id="@reserva.ReservaId">
-                                            Avaliar
-                                            @if (helper.isCliente)
-                                            {
-                                                @Html.Raw("imóvel")
-                                            }
-                                            else
-                                            {
-                                                @Html.Raw("cliente")
-                                            }
-                                        </a>
-                                    }
-                                }
-                                @if (helper.isAdmin)
+                            }
+                            @if (i == 4 && (helper.isCliente || helper.isFunc))
+                            {// comentar
+                                @if (nofeedyet.Any(rs => rs == reserva.ReservaId))
                                 {
-                                    <a asp-action="Delete" asp-route-id="@reserva.ReservaId">Apagar</a>
+                                    <a asp-controller="Feedbacks" asp-action="Create" asp-route-id="@reserva.ReservaId">
+                                        Avaliar
+                                        @if (helper.isCliente)
+                                        {
+                                            @Html.Raw("imóvel")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("cliente")
+                                        }
+                                    </a>
                                 }
+                            }
+
+                            @if (helper.isAdmin)
+                            {
+                                <a asp-action="Delete" asp-route-id="@reserva.ReservaId">Apagar</a>
                             }
                             @*<a asp-action="Details" asp-route-id="@reserva.ReservaId">Details</a>*@
                         </td>

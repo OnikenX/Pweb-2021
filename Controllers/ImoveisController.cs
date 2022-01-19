@@ -58,7 +58,7 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
             ViewData["comentarios"] = await _context.Feedbacks
-                .Where(fb => fb.Reserva.ImovelId == id || fb.AuthorIsCliente)
+                .Where(fb => fb.Reserva.ImovelId == id && fb.AuthorIsCliente)
                 .Include(fb => fb.ApplicationUser).ToListAsync();
             ViewData["imagens"] = await _context.ImovelImgs
                 .Where(img => img.ImovelId == id).ToListAsync();
