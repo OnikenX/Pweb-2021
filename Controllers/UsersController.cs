@@ -123,7 +123,7 @@ namespace Pweb_2021.Controllers
                 {
                     if (string.IsNullOrEmpty(user_new_info.Email))
                     {
-                        ModelState.AddModelError(string.Empty, "There is no email to change.");
+                        ModelState.AddModelError(string.Empty, "Não existe email par mudar.");
                         return View(user_new_info);
                     }
 
@@ -149,7 +149,7 @@ namespace Pweb_2021.Controllers
                     //if errors
                     if (string.IsNullOrEmpty(user_new_info.Password))
                     {
-                        ModelState.AddModelError(string.Empty, "There is no password to change.");
+                        ModelState.AddModelError(string.Empty, "Não existe password para mudar.");
                         return View(user_new_info);
                     }
 

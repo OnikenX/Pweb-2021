@@ -101,11 +101,11 @@ namespace Pweb_2021.Areas.Identity.Pages.Account
                 {
                     if (result.IsNotAllowed)
                     {
-                        ModelState.AddModelError(string.Empty, "User is not allowed.");
+                        ModelState.AddModelError(string.Empty, "O Utilizador não tem acesso.");
                         return Page();
                     }
                     
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tentativa de login inválida.");
                     return Page();
                 }
                

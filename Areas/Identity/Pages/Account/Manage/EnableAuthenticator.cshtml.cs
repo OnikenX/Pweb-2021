@@ -89,7 +89,7 @@ namespace Pweb_2021.Areas.Identity.Pages.Account.Manage
 
             if (!is2faTokenValid)
             {
-                ModelState.AddModelError("Input.Code", "Verification code is invalid.");
+                ModelState.AddModelError("Input.Code", "Codigo de verificação inválido.");
                 await LoadSharedKeyAndQrCodeUriAsync(user);
                 return Page();
             }
