@@ -201,9 +201,6 @@ namespace Pweb_2021.Controllers
         [Authorize(Roles = Statics.Roles.CLIENTE)]
         public async Task<IActionResult> Create([Bind("ReservaId,DataInicial,DataFinal,ImovelId,ApplicationUserId")] Reserva reserva)
         {
-
-
-
             do
             {
                 if (!ModelState.IsValid)

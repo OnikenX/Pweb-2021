@@ -29,12 +29,12 @@ namespace Pweb_2021.Controllers
         // GET: Imoveis
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Imoveis.Include(i => i.ApplicationUser);
             var imagens = await _context.ImovelImgs.ToListAsync();
             ViewData["imagens"] = imagens;
-
-            ViewBag.helper = new HelperClass(this);
-            return View(await applicationDbContext.ToListAsync());
+            var helper = new HelperClass(this);
+            ViewBag.helper = helper;
+            var imoveis = await _context.Imoveis.Include(i => i.ApplicationUser).Where(i => i.ApplicationUserId == helper.userId).ToListAsync();
+            return View(imoveis);
         }
 
         private object Helper(ref ImoveisController imoveisController)
@@ -110,6 +110,15 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
+            var helper = new HelperClass(this);
+            if (helper.isGestor)
+            {
+                if (imovel.ApplicationUserId != helper.userId)
+                {
+                    return NotFound();
+                }
+            }
+
             ViewData["imagens"] = await _context.ImovelImgs.Where(img => img.ImovelId == id).ToListAsync();
             return View(imovel);
         }
@@ -169,6 +178,15 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
+            var helper = new HelperClass(this);
+            if (helper.isGestor)
+            {
+                if (imovel.ApplicationUserId != helper.userId)
+                {
+                    return NotFound();
+                }
+            }
+
             return View(imovel);
         }
 
@@ -180,8 +198,8 @@ namespace Pweb_2021.Controllers
         {
             var imovel = await _context.Imoveis.FindAsync(id);
             var reservas = await _context.Reservas.Where(rs => rs.ImovelId == id).ToListAsync();
-            
-            foreach(var reserva in reservas)
+
+            foreach (var reserva in reservas)
             {
                 var feedbacks = await _context.Feedbacks.Where(fb => fb.ReservaId == reserva.ReservaId).ToListAsync();
                 foreach (var feedback in feedbacks)
@@ -190,8 +208,8 @@ namespace Pweb_2021.Controllers
                 }
                 _context.Reservas.Remove(reserva);
             }
-            var imagens = await _context.ImovelImgs.Where(img => img.ImovelImgId == id).ToListAsync(); 
-            foreach(var imagem in imagens)
+            var imagens = await _context.ImovelImgs.Where(img => img.ImovelImgId == id).ToListAsync();
+            foreach (var imagem in imagens)
             {
                 DeleteFile(imagem.pathToImage);
                 _context.Remove(imagem);
@@ -200,7 +218,6 @@ namespace Pweb_2021.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool ImovelExists(int id)
         {
             return _context.Imoveis.Any(e => e.ImovelId == id);
@@ -312,7 +329,7 @@ namespace Pweb_2021.Controllers
         }
 
 
-        
+
         private string UploadedFile(ImovelImgViewModel model)
         {
             string uniqueFileName = null;
@@ -330,7 +347,7 @@ namespace Pweb_2021.Controllers
             return uniqueFileName;
         }
 
-       
+
         //apagar a imagem do fs
         private bool DeleteFile(string fileName)
         {

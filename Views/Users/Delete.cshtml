@@ -6,7 +6,12 @@
 
 <h1>Apagar</h1>
 
-<h3>Tens a certeza que queres Apagar este funcionario?</h3>
+<h3>Tens a certeza que queres Apagar este utilizador?</h3>
+@if (ViewBag.isGestor)
+{
+
+    <h4 class="text-danger">Está prestes a pagar um gestor, isto significa todos os funcionarios criados por este, os imoveis e as reservas, imagens e comentarios relacionados ao imóvel.</h4>
+}
 <div>
     <h4>Utilizador</h4>
     <hr />

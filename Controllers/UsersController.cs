@@ -19,10 +19,13 @@ namespace Pweb_2021.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly ImoveisController _imoveisController;
+
+        public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ImoveisController imoveisController)
         {
             _userManager = userManager;
             _context = context;
+            _imoveisController = imoveisController;
         }
 
 
@@ -34,7 +37,15 @@ namespace Pweb_2021.Controllers
             ViewData["userRoles"] = userRoles;
             var roles = await _context.Roles.ToListAsync();
             ViewData["roles"] = roles;
-            var users = await _context.Users.Where(usr => !usr.Deleted).ToListAsync();
+            var tmpusers = await _context.Users.Where(usr => !usr.Deleted).ToListAsync();
+            var users = new List<ApplicationUser>();
+            foreach (var user in tmpusers)
+            {
+                if (!await _userManager.IsInRoleAsync(user, Statics.Roles.ADMIN))
+                {
+                    users.Add(user);
+                }
+            }
             ViewBag.helper = helper;
             return View(users);
         }
@@ -52,13 +63,18 @@ namespace Pweb_2021.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
+            if (await _userManager.IsInRoleAsync(user, Statics.Roles.ADMIN))
+            {
+                return NotFound();
+            }
+
+            ViewData["isGestor"] = await _userManager.IsInRoleAsync(user, Statics.Roles.GESTOR);
             return View(user);
         }
 
@@ -69,7 +85,24 @@ namespace Pweb_2021.Controllers
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var user = await _context.Users.FindAsync(id);
+
             user.Deleted = true;
+            var imoveis = await _context.Imoveis.Where(imv => imv.ApplicationUserId == user.Id).ToListAsync();
+
+
+            //apagar os imoveis relacionados
+            foreach (var imovel in await _context.Imoveis.Where(imv => imv.ApplicationUserId == id).ToListAsync())
+            {
+                await _imoveisController.DeleteConfirmed(imovel.ImovelId);
+            }
+
+            //apagar os funcionarios relacionados
+            foreach (var func in await _context.Users.Where(user => user.GestorId == id).ToListAsync())
+            {
+                func.Deleted = true;
+                _context.Users.Update(func);
+            }
+
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

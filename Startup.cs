@@ -59,7 +59,7 @@ namespace Pweb_2021
             //.AddUserManager<UserManager<ApplicationUser>>()
             //.AddDefaultTokenProviders()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddControllersAsServices();
 
 
 
