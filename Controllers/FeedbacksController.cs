@@ -110,6 +110,7 @@ namespace Pweb_2021.Controllers
             {
                 return NotFound();
             }
+            feedback.Reserva = await _context.Reservas.FindAsync(feedback.ReservaId);
             return View(feedback);
         }
 

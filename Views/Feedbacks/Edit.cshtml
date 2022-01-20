@@ -34,7 +34,13 @@
 </div>
 
 <div>
-    <a asp-action="Index">Voltar à lista</a>
+    @if(@Model.AuthorIsCliente)
+    {
+        <a asp-action="Details" asp-controller="Imoveis" asp-route-id="@Model.Reserva.ImovelId"> Voltar ao Imóvel</a>    
+    }else{
+        <a asp-action="UserDetails" asp-controller="Reservas" asp-route-id="@Model.Reserva.ApplicationUserId"> Voltar ao cliente</a>    
+    }
+    
 </div>
 
 @section Scripts {

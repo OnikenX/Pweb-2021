@@ -245,63 +245,6 @@ namespace Pweb_2021.Controllers
             return View(reserva);
         }
 
-        // GET: Reservas/Edit/5
-        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR_FUNCIONARIO)]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var reserva = await _context.Reservas.FindAsync(id);
-            if (reserva == null)
-            {
-                return NotFound();
-            }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", reserva.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", reserva.ImovelId);
-            return View(reserva);
-        }
-
-        // POST: Reservas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = Statics.Roles.ADMIN_GESTOR_FUNCIONARIO)]
-        public async Task<IActionResult> Edit(int id, [Bind("ReservaId,DataInicial,DataFinal,Comentario,Estado,ImovelId,ApplicationUserId")] Reserva reserva)
-        {
-            if (id != reserva.ReservaId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(reserva);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReservaExists(reserva.ReservaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", reserva.ApplicationUserId);
-            ViewData["ImovelId"] = new SelectList(_context.Imoveis, "ImovelId", "ApplicationUserId", reserva.ImovelId);
-            return View(reserva);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Statics.Roles.GESTOR_FUNCIONARIO)]
@@ -314,6 +257,15 @@ namespace Pweb_2021.Controllers
                 {
                     break;
                 }
+                if(valor.Estado == 3)
+                {
+                    if(await _context.Reservas.AnyAsync(rs => rs.ImovelId == reserva.ImovelId && rs.Estado == 3))
+                    {
+                        ModelState.AddModelError(string.Empty, "Este imóvel já tem alguem com a sua posse.");
+                        break;
+                    }
+                }
+
                 reserva.Estado = valor.Estado;
                 _context.Reservas.Update(reserva);
                 _context.SaveChanges();

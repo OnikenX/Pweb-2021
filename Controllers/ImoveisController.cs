@@ -33,8 +33,23 @@ namespace Pweb_2021.Controllers
             ViewData["imagens"] = imagens;
             var helper = new HelperClass(this);
             ViewBag.helper = helper;
-            var imoveis = await _context.Imoveis.Include(i => i.ApplicationUser).Where(i => i.ApplicationUserId == helper.userId).ToListAsync();
-            return View(imoveis);
+            var cache_imoveis = _context.Imoveis.Include(i => i.ApplicationUser);
+            if (helper.isGestor || helper.isFunc)
+            {
+                string gestorId;
+                if (helper.isFunc)
+                {
+                    var func = await _context.Users.FindAsync(helper.userId);
+                    gestorId = func.GestorId;
+                }
+                else
+                {
+                    gestorId=helper.userId;
+                }
+
+                cache_imoveis.Where(i => i.ApplicationUserId == gestorId);
+            }
+            return View(await cache_imoveis.ToListAsync());
         }
 
         private object Helper(ref ImoveisController imoveisController)

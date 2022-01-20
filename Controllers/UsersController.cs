@@ -86,6 +86,11 @@ namespace Pweb_2021.Controllers
         {
             var user = await _context.Users.FindAsync(id);
 
+            if(user == null)
+            {
+                return NotFound();
+            }
+
             user.Deleted = true;
             var imoveis = await _context.Imoveis.Where(imv => imv.ApplicationUserId == user.Id).ToListAsync();
 
