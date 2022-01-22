@@ -35,7 +35,7 @@ namespace Pweb_2021.Models
 
         public int TotalDays()
         {
-            return (int)(DataFinal - DataInicial).TotalDays;
+            return (int)(DataFinal - DataInicial ).TotalDays;
         }
         public int PrecoCalculado()
         {

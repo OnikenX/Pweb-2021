@@ -214,12 +214,18 @@ namespace Pweb_2021.Controllers
                     break;
                 }
 
+                if (reserva.DataFinal == reserva.DataInicial)
+                {
+                    ModelState.AddModelError(string.Empty, "Não podes marcar para o mesmo dia, tem de ser pelo menos 2 dias.");
+                    break;
+                }
+
                 var now = DateTime.Now;
                 if (reserva.DataFinal < now || reserva.DataInicial  < now){
                     ModelState.AddModelError(string.Empty, "Um pouco para o impossivel marcar para uma data no passado, tenta uma data apartir de hoje.");
                     break;
                 }
-                
+
                 var reservas = await _context.Reservas.Where(r => r.ImovelId == reserva.ImovelId && reserva.Estado > 1).ToListAsync();
                 
                 foreach (var outra_reserva in reservas)
@@ -231,6 +237,7 @@ namespace Pweb_2021.Controllers
                         goto Failure;
                     }
                 }
+
                 reserva.Estado = 1;
                 _context.Add(reserva);
                 await _context.SaveChangesAsync();

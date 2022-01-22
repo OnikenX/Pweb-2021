@@ -1,3 +1,4 @@
+using EmailService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,8 +30,13 @@ namespace Pweb_2021
         public void ConfigureServices(IServiceCollection services)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "AppData");
-            
+
             bool secureLogin = false;
+
+            var emailConfig = Configuration
+                .GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -60,6 +66,7 @@ namespace Pweb_2021
             //.AddDefaultTokenProviders()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddControllersAsServices();
+            services.AddScoped<IEmailSender, EmailSender>();
 
 
 

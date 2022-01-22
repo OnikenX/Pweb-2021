@@ -18,6 +18,11 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Imoveis" asp-action="Index">Imóveis</a>
+                        </li>
+
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -29,14 +34,12 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionarios</a>
-
                             </li>
                         }
                         @if (User.IsInRole(Pweb_2021.Statics.Roles.ADMIN))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
-
                             </li>
                         }
                     </ul>
