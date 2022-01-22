@@ -144,7 +144,7 @@ namespace Pweb_2021.Controllers
         [HttpPost]
         [Authorize(Roles = Statics.Roles.GESTOR)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ImovelId,Nome,Descricao,ApplicationUserId")] Imovel imovel)
+        public async Task<IActionResult> Edit(int id, [Bind("ImovelId,Nome,Descricao,Preco,ApplicationUserId")] Imovel imovel)
         {
             if (id != imovel.ImovelId)
             {
